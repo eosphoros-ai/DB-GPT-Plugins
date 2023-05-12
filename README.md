@@ -1,2 +1,2 @@
 # DB-GPT-Plugins
-DB-GPT 运行Plugin默认仓库
+DB-GPT Plugins Repo, Which support AutoGPT plugin. 
