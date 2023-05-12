@@ -1,0 +1,14 @@
+black
+isort
+flake8
+pylint
+abstract-singleton
+wheel
+setuptools
+build
+twine
+pymysql
+numpy
+pandas==1.5.2
+matplotlib==3.5.1
+pyecharts
