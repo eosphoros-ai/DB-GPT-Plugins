@@ -1,8 +1,7 @@
-"""This is a template for DB-GPT plugins."""
+"""This is a template for Auto-GPT plugins."""
 from typing import Any, Dict, List, Optional, Tuple, TypeVar, TypedDict
 
 from auto_gpt_plugin_template import AutoGPTPluginTemplate
-
 
 PromptGenerator = TypeVar("PromptGenerator")
 
@@ -12,16 +11,16 @@ class Message(TypedDict):
     content: str
 
 
-class DBGPTOceanBase(AutoGPTPluginTemplate):
+class DbGPTSimpleChart(AutoGPTPluginTemplate):
     """
-    This is an DB-GPT plugin to connect OceanBase.
+    This is a template for Auto-GPT plugins.
     """
 
     def __init__(self):
         super().__init__()
-        self._name = "DB-GPT-OB-Serverless-Plugin"
+        self._name = "Db-GPT-SimpleChart-Template"
         self._version = "0.1.0"
-        self._description = "This is an DB-GPT plugin to connect OceanBase."
+        self._description = "This is a AutoGPT plugin  to reveal simple chart."
 
     def can_handle_on_response(self) -> bool:
         """This method is called to check that the plugin can
@@ -53,16 +52,28 @@ class DBGPTOceanBase(AutoGPTPluginTemplate):
         Returns:
             PromptGenerator: The prompt generator.
         """
-        from .executor import ob_sql_executor 
+        from .simplechart import (line_chart_excutor,  bar_chart_excutor)
 
         prompt.add_command(
-            "ob_sql_executor",
-            "Execute SQL in OceanBase Database.",
+            "line_chart_excutor",
+            "Generate Line Chart",
             {
-                "sql": "<sql>"
+                "datas": "<list of data to be displayed corresponding to each index >",
+                "index": "<Data list of all index>",
+                "columns": "<List of data types to display, can be None>",
             },
-            ob_sql_executor
+            line_chart_excutor,
         )
+
+        prompt.add_command(
+            "bar_chart_excutor",
+            "Bart Chart",
+            {
+                "datas": "<datas>",
+            },
+            bar_chart_excutor,
+        )
+
         return prompt
 
     def can_handle_on_planning(self) -> bool:
@@ -74,7 +85,7 @@ class DBGPTOceanBase(AutoGPTPluginTemplate):
         return False
 
     def on_planning(
-        self, prompt: PromptGenerator, messages: List[Message]
+            self, prompt: PromptGenerator, messages: List[Message]
     ) -> Optional[str]:
         """This method is called before the planning chat completion is done.
 
@@ -169,7 +180,7 @@ class DBGPTOceanBase(AutoGPTPluginTemplate):
         return False
 
     def pre_command(
-        self, command_name: str, arguments: Dict[str, Any]
+            self, command_name: str, arguments: Dict[str, Any]
     ) -> Tuple[str, Dict[str, Any]]:
         """This method is called before the command is executed.
 
@@ -203,7 +214,7 @@ class DBGPTOceanBase(AutoGPTPluginTemplate):
         pass
 
     def can_handle_chat_completion(
-        self, messages: Dict[Any, Any], model: str, temperature: float, max_tokens: int
+            self, messages: Dict[Any, Any], model: str, temperature: float, max_tokens: int
     ) -> bool:
         """This method is called to check that the plugin can
           handle the chat_completion method.
@@ -219,7 +230,7 @@ class DBGPTOceanBase(AutoGPTPluginTemplate):
         return False
 
     def handle_chat_completion(
-        self, messages: List[Message], model: str, temperature: float, max_tokens: int
+            self, messages: List[Message], model: str, temperature: float, max_tokens: int
     ) -> str:
         """This method is called when the chat completion is done.
 
@@ -231,6 +242,28 @@ class DBGPTOceanBase(AutoGPTPluginTemplate):
 
         Returns:
             str: The resulting response.
+        """
+        pass
+
+    def can_handle_text_embedding(
+            self, text: str
+    ) -> bool:
+        """This method is called to check that the plugin can
+          handle the text_embedding method.
+        Args:
+            text (str): The text to be convert to embedding.
+          Returns:
+              bool: True if the plugin can handle the text_embedding method."""
+        return False
+
+    def handle_text_embedding(
+            self, text: str
+    ) -> list:
+        """This method is called when the chat completion is done.
+        Args:
+            text (str): The text to be convert to embedding.
+        Returns:
+            list: The text embedding.
         """
         pass
 
