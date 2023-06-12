@@ -16,6 +16,7 @@ from bokeh.plotting import figure
 from bokeh.embed import file_html
 from bokeh.resources import INLINE
 import numpy as np
+from matplotlib.font_manager import FontProperties
 
 
 def get_conn():
@@ -112,7 +113,8 @@ def histogram_executor(title: str, sql: str):
     columns = df.columns.tolist()
 
     # 绘制柱状图
-    fig, ax = plt.subplots(figsize=(6, 4), dpi=100)
+    plt.rcParams['font.sans-serif'] = ['SimHei']
+    fig, ax = plt.subplots(figsize=(8, 6), dpi=100)
     ax.bar(df[columns[0]].tolist(), df[columns[1]].tolist())
     ax.set_xlabel(columns[0])
     ax.set_ylabel(columns[1])
@@ -125,7 +127,7 @@ def histogram_executor(title: str, sql: str):
     data = base64.b64encode(buf.getvalue()).decode('ascii')
 
     # 生成 HTML
-    html = f'<img src="data:image/png;base64,{data}" width="600" height="400" />'
+    html = f'<img src="data:image/png;base64,{data}" width="800" height="600" />'
 
     with open('bar_chart.html', 'w') as file:
         file.write(html)
