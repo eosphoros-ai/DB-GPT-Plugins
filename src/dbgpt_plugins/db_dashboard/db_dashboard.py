@@ -129,7 +129,7 @@ def histogram_executor(title: str, sql: str):
     data = base64.b64encode(buf.getvalue()).decode('ascii')
 
     # 生成 HTML
-    html_img = f'<img src="data:image/png;base64,{data}" class="my-image" />'
+    html_img = f'<img class="my-image" src="data:image/png;base64,{data}" width="1024" height="768"/>'
     table_style = """<style> 
       .my-image {
         width: 800px;
