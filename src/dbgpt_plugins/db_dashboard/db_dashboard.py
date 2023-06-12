@@ -129,8 +129,12 @@ def histogram_executor(title: str, sql: str):
     data = base64.b64encode(buf.getvalue()).decode('ascii')
 
     # 生成 HTML
-    html_img = f'<img src="data:image/png;base64,{data}" width="800" height="600" />'
+    html_img = f'<img src="data:image/png;base64,{data}" class="my-image" />'
     table_style = """<style> 
+      .my-image {
+        width: 800px;
+        height: 600px;
+      }
      </style>"""
     html = f"<html><head>{table_style}</head><body>{html_img}</body></html>"
     with open('bar_chart.html', 'w') as file:
