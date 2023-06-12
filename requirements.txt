@@ -10,7 +10,7 @@ twine
 pymysql
 numpy
 pandas==1.5.2
-matplotlib==3.5.1
+matplotlib==3.3.2
 pyecharts
 duckdb==0.8.0
 mpld3==0.5.9
