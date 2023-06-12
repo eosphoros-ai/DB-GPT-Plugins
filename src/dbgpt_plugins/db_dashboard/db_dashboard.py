@@ -56,49 +56,52 @@ def line_chart_executor(title: str, sql: str):
 
     columns = df.columns.tolist()
 
-    # # 绘制折线图
-    # p = figure(title=title, x_axis_label=columns[0], y_axis_label=columns[1])
-    # p.line(df[columns[0]].tolist(), df[columns[1]].tolist())
-    #
-    # # 生成 HTML
-    # html = file_html(p, INLINE, title + 'Line Chart')
-    # # 打印 HTML
-    # # print(html)
-    # with open('line_chart.html', 'w') as file:
-    #     file.write(html)
-    # return html
-
-    # # 绘制折线图
-    fig, ax = plt.subplots()
-    ax.plot(df[columns[0]].tolist(), df[columns[1]].tolist())
-    ax.set_xlabel(columns[0])
-    ax.set_ylabel(columns[1])
-    ax.set_title(title)
-
-    # 将图表保存为二进制数据
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png')
-    buf.seek(0)
-    data = base64.b64encode(buf.getvalue()).decode('ascii')
+    # 绘制折线图
+    p = figure(title=title, x_axis_label=columns[0], y_axis_label=columns[1])
+    p.line(df[columns[0]].tolist(), df[columns[1]].tolist())
 
     # 生成 HTML
-    html = f'<img src="data:image/png;base64,{data}"/>'
-
+    html = file_html(p, INLINE, title + 'Line Chart')
+    # 打印 HTML
+    # print(html)
     with open('line_chart.html', 'w') as file:
         file.write(html)
-
     return html
+
+    # # # 绘制折线图
+    # fig, ax = plt.subplots()
+    # ax.plot(df[columns[0]].tolist(), df[columns[1]].tolist())
+    # ax.set_xlabel(columns[0])
+    # ax.set_ylabel(columns[1])
+    # ax.set_title(title)
+    #
+    # # 将图表保存为二进制数据
+    # buf = io.BytesIO()
+    # plt.savefig(buf, format='png')
+    # buf.seek(0)
+    # data = base64.b64encode(buf.getvalue()).decode('ascii')
+    #
+    # # 生成 HTML
+    # html = f'<img src="data:image/png;base64,{data}"/>'
+    #
+    # with open('line_chart.html', 'w') as file:
+    #     file.write(html)
+    #
+    # return html
     # # 转换为 HTML 文本
     # html_text = mpld3.fig_to_html(fig)
     # print(html_text)
     # return html_text
 
-    # line = Line()
-    # line.add_xaxis(df[columns[0]].tolist())
-    # line.add_yaxis(columns[1], df[columns[1]].tolist())
-    # line.set_global_opts(title_opts=opts.TitleOpts(title=title))
-    # line.render('report.html')
-    # return line.render_embed()
+    line = Line()
+    line.add_xaxis(df[columns[0]].tolist())
+    line.add_yaxis(columns[1], df[columns[1]].tolist())
+    line.set_global_opts(title_opts=opts.TitleOpts(title=title))
+    line.render('report.html')
+    html = line.render_embed()
+    html.replace("""<script type="text/javascript" src="https://assets.pyecharts.org/assets/v5/echarts.min.js"></script>""", f"""<script type="text/javascript" >{getJsStr()}</script>""")
+
+    return html
 
 
 def histogram_executor(title: str, sql: str):
@@ -106,27 +109,27 @@ def histogram_executor(title: str, sql: str):
 
     columns = df.columns.tolist()
 
-    # 绘制柱状图
-    fig, ax = plt.subplots()
-    ax.bar(df[columns[0]].tolist(), df[columns[1]].tolist())
-    ax.set_xlabel(columns[0])
-    ax.set_ylabel(columns[1])
-    ax.set_title(title)
-
-
-    # 将图表保存为二进制数据
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png')
-    buf.seek(0)
-    data = base64.b64encode(buf.getvalue()).decode('ascii')
-
-    # 生成 HTML
-    html = f'<img src="data:image/png;base64,{data}"/>'
-
-    with open('bar_chart.html', 'w') as file:
-        file.write(html)
-
-    return html
+    # # 绘制柱状图
+    # fig, ax = plt.subplots()
+    # ax.bar(df[columns[0]].tolist(), df[columns[1]].tolist())
+    # ax.set_xlabel(columns[0])
+    # ax.set_ylabel(columns[1])
+    # ax.set_title(title)
+    #
+    #
+    # # 将图表保存为二进制数据
+    # buf = io.BytesIO()
+    # plt.savefig(buf, format='png')
+    # buf.seek(0)
+    # data = base64.b64encode(buf.getvalue()).decode('ascii')
+    #
+    # # 生成 HTML
+    # html = f'<img src="data:image/png;base64,{data}"/>'
+    #
+    # with open('bar_chart.html', 'w') as file:
+    #     file.write(html)
+    #
+    # return html
 
 
     # # 转换为 HTML 文本
@@ -134,15 +137,31 @@ def histogram_executor(title: str, sql: str):
     # print(html_text)
     # return html_text
 
-    # bar = (
-    #     Bar()
-    #         .add_xaxis(df[columns[0]].tolist())
-    #         .add_yaxis(columns[1], df[columns[1]].tolist())
-    #         .set_global_opts(title_opts=opts.TitleOpts(title=title))
-    # )
-    # bar.render('report.html')
-    # return bar.render_embed()
+    bar = (
+        Bar()
+            .add_xaxis(df[columns[0]].tolist())
+            .add_yaxis(columns[1], df[columns[1]].tolist())
+            .set_global_opts(title_opts=opts.TitleOpts(title=title))
+    )
+    html = bar.render_embed();
+    html.replace("""<script type="text/javascript" src="https://assets.pyecharts.org/assets/v5/echarts.min.js"></script>""", f"""<script type="text/javascript" >{getJsStr()}</script>""")
 
+    return html
+
+
+def getJsStr():
+    # 打开文件，指定读取模式（'r' 表示读取）
+    file = open('input.txt', 'r')
+
+    # 逐行读取文件内容
+    lines = file.readlines()
+
+    # 关闭文件
+    file.close()
+
+    # 将每行文本内容合并为一个字符串
+    text = ''.join(lines)
+    return text
 
 def __sql_execute(sql: str, db_name: str = None):
     try:
