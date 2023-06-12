@@ -112,13 +112,12 @@ def histogram_executor(title: str, sql: str):
     columns = df.columns.tolist()
 
     # 绘制柱状图
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(6, 4), dpi=100)
     ax.bar(df[columns[0]].tolist(), df[columns[1]].tolist())
     ax.set_xlabel(columns[0])
     ax.set_ylabel(columns[1])
     ax.set_title(title)
 
-    fig = plt.figure(figsize=(4, 3), dpi=200)
     # 将图表保存为二进制数据
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
@@ -126,7 +125,7 @@ def histogram_executor(title: str, sql: str):
     data = base64.b64encode(buf.getvalue()).decode('ascii')
 
     # 生成 HTML
-    html = f'<img src="data:image/png;base64,{data}"/>'
+    html = f'<img src="data:image/png;base64,{data}" width="600" height="400" />'
 
     with open('bar_chart.html', 'w') as file:
         file.write(html)
