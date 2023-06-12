@@ -3,8 +3,17 @@ import pymysql
 import pymysql.cursors
 import duckdb
 import pandas as pd
+import base64
+import io
 from pyecharts.charts import Line, Bar
 from pyecharts import options as opts
+import matplotlib.pyplot as plt
+import mpld3
+
+from bokeh.plotting import figure
+from bokeh.embed import file_html
+from bokeh.resources import INLINE
+import numpy as np
 
 
 def get_conn():
@@ -17,7 +26,7 @@ def get_conn():
                     port=int(os.getenv("DB_PORT", 3306), ),
                     user=os.getenv("DB_USER", "root"),
                     password=os.getenv("DB_PASSWORD", "aa123456"),
-                    database=os.getenv("DB_DATABASE"),
+                    database=os.getenv("DB_DATABASE", "gpt-user"),
                     charset='utf8mb4',
                     ssl_ca=None,
                 )
@@ -30,6 +39,7 @@ def get_conn():
     except Exception as e:
         return str("数据库连接异常！" + str(e))
 
+
 def db_schemas():
     conn = get_conn()
     _sql = f"""
@@ -40,17 +50,55 @@ def db_schemas():
         results = cursor.fetchall()
     return results
 
+
 def line_chart_executor(title: str, sql: str):
     df = pd.read_sql(sql, get_conn())
 
     columns = df.columns.tolist()
 
-    line = Line()
-    line.add_xaxis(df[columns[0]].tolist())
-    line.add_yaxis(columns[1], df[columns[1]].tolist())
-    line.set_global_opts(title_opts=opts.TitleOpts(title=title))
-    line.render('report.html')
-    return line.render_embed()
+    # # 绘制折线图
+    # p = figure(title=title, x_axis_label=columns[0], y_axis_label=columns[1])
+    # p.line(df[columns[0]].tolist(), df[columns[1]].tolist())
+    #
+    # # 生成 HTML
+    # html = file_html(p, INLINE, title + 'Line Chart')
+    # # 打印 HTML
+    # # print(html)
+    # with open('line_chart.html', 'w') as file:
+    #     file.write(html)
+    # return html
+
+    # # 绘制折线图
+    fig, ax = plt.subplots()
+    ax.plot(df[columns[0]].tolist(), df[columns[1]].tolist())
+    ax.set_xlabel(columns[0])
+    ax.set_ylabel(columns[1])
+    ax.set_title(title)
+
+    # 将图表保存为二进制数据
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    data = base64.b64encode(buf.getvalue()).decode('ascii')
+
+    # 生成 HTML
+    html = f'<img src="data:image/png;base64,{data}"/>'
+
+    with open('line_chart.html', 'w') as file:
+        file.write(html)
+
+    return html
+    # # 转换为 HTML 文本
+    # html_text = mpld3.fig_to_html(fig)
+    # print(html_text)
+    # return html_text
+
+    # line = Line()
+    # line.add_xaxis(df[columns[0]].tolist())
+    # line.add_yaxis(columns[1], df[columns[1]].tolist())
+    # line.set_global_opts(title_opts=opts.TitleOpts(title=title))
+    # line.render('report.html')
+    # return line.render_embed()
 
 
 def histogram_executor(title: str, sql: str):
@@ -58,15 +106,42 @@ def histogram_executor(title: str, sql: str):
 
     columns = df.columns.tolist()
 
-    bar = (
-        Bar()
-            .add_xaxis(df[columns[0]].tolist())
-            .add_yaxis(columns[1], df[columns[1]].tolist())
-            .set_global_opts(title_opts=opts.TitleOpts(title=title))
-    )
-    bar.render('report.html')
-    return bar.render_embed()
+    # 绘制柱状图
+    fig, ax = plt.subplots()
+    ax.bar(df[columns[0]].tolist(), df[columns[1]].tolist())
+    ax.set_xlabel(columns[0])
+    ax.set_ylabel(columns[1])
+    ax.set_title(title)
 
+
+    # 将图表保存为二进制数据
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    data = base64.b64encode(buf.getvalue()).decode('ascii')
+
+    # 生成 HTML
+    html = f'<img src="data:image/png;base64,{data}"/>'
+
+    with open('bar_chart.html', 'w') as file:
+        file.write(html)
+
+    return html
+
+
+    # # 转换为 HTML 文本
+    # html_text = mpld3.fig_to_html(fig)
+    # print(html_text)
+    # return html_text
+
+    # bar = (
+    #     Bar()
+    #         .add_xaxis(df[columns[0]].tolist())
+    #         .add_yaxis(columns[1], df[columns[1]].tolist())
+    #         .set_global_opts(title_opts=opts.TitleOpts(title=title))
+    # )
+    # bar.render('report.html')
+    # return bar.render_embed()
 
 
 def __sql_execute(sql: str, db_name: str = None):
@@ -86,5 +161,5 @@ def __sql_execute(sql: str, db_name: str = None):
 
 
 if __name__ == '__main__':
-    # print(histogram_executor('测试', "SELECT users.city, COUNT(tran_order.order_id) AS order_count FROM users LEFT JOIN tran_order ON users.user_name = tran_order.user_name GROUP BY users.city LIMIT 5"))
-    print(db_schemas())
+    print(line_chart_executor('测试', "SELECT users.city, COUNT(tran_order.order_id) AS order_count FROM users LEFT JOIN tran_order ON users.user_name = tran_order.user_name GROUP BY users.city LIMIT 5"))
+    # print(db_schemas())

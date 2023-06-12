@@ -13,3 +13,5 @@ pandas==1.5.2
 matplotlib==3.5.1
 pyecharts
 duckdb==0.8.0
+mpld3==0.5.9
+bokeh==3.1.1
