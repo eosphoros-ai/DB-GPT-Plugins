@@ -118,7 +118,7 @@ def histogram_executor(title: str, sql: str):
     ax.set_ylabel(columns[1])
     ax.set_title(title)
 
-
+    fig = plt.figure(figsize=(4, 3), dpi=200)
     # 将图表保存为二进制数据
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
