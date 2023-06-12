@@ -49,6 +49,7 @@ def line_chart_executor(title: str, sql: str):
     line.add_xaxis(df[columns[0]].tolist())
     line.add_yaxis(columns[1], df[columns[1]].tolist())
     line.set_global_opts(title_opts=opts.TitleOpts(title=title))
+    line.render('report.html')
     return line.render_embed()
 
 
@@ -63,6 +64,7 @@ def histogram_executor(title: str, sql: str):
             .add_yaxis(columns[1], df[columns[1]].tolist())
             .set_global_opts(title_opts=opts.TitleOpts(title=title))
     )
+    bar.render('report.html')
     return bar.render_embed()
 
 
