@@ -18,6 +18,7 @@ from bokeh.embed import file_html
 from bokeh.resources import INLINE
 import numpy as np
 from matplotlib.font_manager import FontProperties
+import matplotlib.font_manager as fm
 
 
 def get_conn():
@@ -72,7 +73,8 @@ def line_chart_executor(title: str, sql: str):
     #     file.write(html)
     # return html
 
-    plt.rcParams['font.sans-serif'] = ['SimHei']
+    plt.rcParams['font.family'] = 'sans-serif'
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'Arial']
     # # 绘制折线图
     fig, ax = plt.subplots(figsize=(8, 6), dpi=100)
     ax.plot(df[columns[0]].tolist(), df[columns[1]].tolist())
@@ -113,17 +115,17 @@ def current_dir():
 
 def histogram_executor(title: str, sql: str):
     df = pd.read_sql(sql, get_conn())
-
     columns = df.columns.tolist()
-    font = FontProperties(fname=f"{current_dir()}/SourceHanSansSC-Bold.otf", size=15)
+    font = FontProperties(fname=f"SourceHanSansSC-Bold.otf")
 
     # 绘制柱状图
-    plt.rcParams['font.sans-serif'] = ['SimHei']
+    plt.rcParams['font.family'] = 'sans-serif'
+    plt.rcParams['font.sans-serif'] = [font.get_name(), 'Arial']
     fig, ax = plt.subplots(figsize=(8, 6), dpi=100)
     ax.bar(df[columns[0]].tolist(), df[columns[1]].tolist())
-    ax.set_xlabel(columns[0],fontproperties=font)
-    ax.set_ylabel(columns[1],fontproperties=font)
-    ax.set_title(title,fontproperties=font)
+    ax.set_xlabel(columns[0])
+    ax.set_ylabel(columns[1])
+    ax.set_title(title)
 
     # 将图表保存为二进制数据
     buf = io.BytesIO()
