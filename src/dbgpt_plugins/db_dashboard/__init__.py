@@ -1,11 +1,6 @@
 """This is a DB-GPT plugins."""
 from typing import Any, Dict, List, Optional, Tuple, TypeVar, TypedDict
 from auto_gpt_plugin_template import AutoGPTPluginTemplate
-from dotenv import load_dotenv
-
-# Load the users .env file into environment variables
-load_dotenv(verbose=True, override=True)
-del load_dotenv
 
 PromptGenerator = TypeVar("PromptGenerator")
 
