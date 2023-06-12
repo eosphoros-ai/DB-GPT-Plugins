@@ -17,6 +17,12 @@ class DbGPTGenericDB(AutoGPTPluginTemplate):
     This is an DbGPT plugin to connect generic db(have access mysql jdbc). Inherit from AutoGPTPluginTemplate， compatible Auto-Gpt
     """
 
+    def can_handle_text_embedding(self, text: str) -> bool:
+        pass
+
+    def handle_text_embedding(self, text: str) -> list:
+        pass
+
     def __init__(self):
         super().__init__()
         self._name = "DB-GPT-SQL-Execution-Plugin"
