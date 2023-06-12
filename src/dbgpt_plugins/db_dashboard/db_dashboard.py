@@ -7,9 +7,11 @@ import base64
 import io
 from pyecharts.charts import Line, Bar
 from pyecharts import options as opts
-import matplotlib.pyplot as plt
-import mpld3
 
+import mpld3
+import matplotlib
+matplotlib.use('Agg')  # 指定使用非交互式后端
+import matplotlib.pyplot as plt
 from bokeh.plotting import figure
 from bokeh.embed import file_html
 from bokeh.resources import INLINE
@@ -109,27 +111,27 @@ def histogram_executor(title: str, sql: str):
 
     columns = df.columns.tolist()
 
-    # # 绘制柱状图
-    # fig, ax = plt.subplots()
-    # ax.bar(df[columns[0]].tolist(), df[columns[1]].tolist())
-    # ax.set_xlabel(columns[0])
-    # ax.set_ylabel(columns[1])
-    # ax.set_title(title)
-    #
-    #
-    # # 将图表保存为二进制数据
-    # buf = io.BytesIO()
-    # plt.savefig(buf, format='png')
-    # buf.seek(0)
-    # data = base64.b64encode(buf.getvalue()).decode('ascii')
-    #
-    # # 生成 HTML
-    # html = f'<img src="data:image/png;base64,{data}"/>'
-    #
-    # with open('bar_chart.html', 'w') as file:
-    #     file.write(html)
-    #
-    # return html
+    # 绘制柱状图
+    fig, ax = plt.subplots()
+    ax.bar(df[columns[0]].tolist(), df[columns[1]].tolist())
+    ax.set_xlabel(columns[0])
+    ax.set_ylabel(columns[1])
+    ax.set_title(title)
+
+
+    # 将图表保存为二进制数据
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    data = base64.b64encode(buf.getvalue()).decode('ascii')
+
+    # 生成 HTML
+    html = f'<img src="data:image/png;base64,{data}"/>'
+
+    with open('bar_chart.html', 'w') as file:
+        file.write(html)
+
+    return html
 
 
     # # 转换为 HTML 文本
@@ -137,16 +139,17 @@ def histogram_executor(title: str, sql: str):
     # print(html_text)
     # return html_text
 
-    bar = (
-        Bar()
-            .add_xaxis(df[columns[0]].tolist())
-            .add_yaxis(columns[1], df[columns[1]].tolist())
-            .set_global_opts(title_opts=opts.TitleOpts(title=title))
-    )
-    html = bar.render_embed();
-    html.replace("""<script type="text/javascript" src="https://assets.pyecharts.org/assets/v5/echarts.min.js"></script>""", f"""<script type="text/javascript" >{getJsStr()}</script>""")
-
-    return html
+    # bar = (
+    #     Bar()
+    #         .add_xaxis(df[columns[0]].tolist())
+    #         .add_yaxis(columns[1], df[columns[1]].tolist())
+    #         .set_global_opts(title_opts=opts.TitleOpts(title=title))
+    # )
+    # html = bar.render_embed();
+    # html.replace("""<script type="text/javascript" src="https://assets.pyecharts.org/assets/v5/echarts.min.js"></script>""", f"""<script type="text/javascript" >{getJsStr()}</script>""")
+    # with open('bar_chart.html', 'w') as file:
+    #     file.write(html)
+    # return html
 
 
 def getJsStr():
