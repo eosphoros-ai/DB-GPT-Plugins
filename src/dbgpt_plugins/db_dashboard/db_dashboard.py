@@ -3,11 +3,10 @@ import pymysql
 import pymysql.cursors
 import duckdb
 import pandas as pd
+from pyecharts.charts import Line, Bar
+from pyecharts import options as opts
 
 
-
-from line_chart import LineChart
-from histogram import Histogram
 
 from dotenv import load_dotenv
 
@@ -53,8 +52,11 @@ def line_chart_executor(title: str, sql: str):
 
     columns = df.columns.tolist()
 
-    chart: LineChart = LineChart()
-    return chart.dash_board_view(title, df[columns[0]].tolist(), columns[1],  df[columns[1]].tolist())
+    line = Line()
+    line.add_xaxis(df[columns[0]].tolist())
+    line.add_yaxis(columns[1], df[columns[1]].tolist())
+    line.set_global_opts(title_opts=opts.TitleOpts(title=title))
+    return line.render_embed()
 
 
 def histogram_executor(title: str, sql: str):
@@ -62,8 +64,14 @@ def histogram_executor(title: str, sql: str):
 
     columns = df.columns.tolist()
 
-    chart: Histogram = Histogram()
-    return  chart.dash_board_view(title, df[columns[0]].tolist(), columns[1],  df[columns[1]].tolist())
+    bar = (
+        Bar()
+            .add_xaxis(df[columns[0]].tolist())
+            .add_yaxis(columns[1], df[columns[1]].tolist())
+            .set_global_opts(title_opts=opts.TitleOpts(title=title))
+    )
+    return bar.render_embed()
+
 
 
 def __sql_execute(sql: str, db_name: str = None):
