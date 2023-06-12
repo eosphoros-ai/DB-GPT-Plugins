@@ -151,7 +151,7 @@ def histogram_executor(title: str, sql: str):
 
 def getJsStr():
     # 打开文件，指定读取模式（'r' 表示读取）
-    file = open('input.txt', 'r')
+    file = open('echarts.min.js', 'r')
 
     # 逐行读取文件内容
     lines = file.readlines()
