@@ -15,17 +15,21 @@ class DbGPTDbDashboard(AutoGPTPluginTemplate):
     This is an DbGPT plugin
     """
 
-    def can_handle_text_embedding(self, text: str) -> bool:
-        pass
-
-    def handle_text_embedding(self, text: str) -> list:
-        pass
 
     def __init__(self):
         super().__init__()
         self._name = "DB-GPT-DASHBOARD-Plugin"
         self._version = "0.1.0"
         self._description = "This is an DbGPT plugin to generate data analysis charts."
+
+
+
+
+    def can_handle_text_embedding(self, text: str) -> bool:
+        pass
+
+    def handle_text_embedding(self, text: str) -> list:
+        pass
 
     def can_handle_on_response(self) -> bool:
         """This method is called to check that the plugin can
