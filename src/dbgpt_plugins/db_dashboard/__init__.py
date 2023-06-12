@@ -1,7 +1,11 @@
-"""This is a template for Auto-GPT plugins."""
+"""This is a DB-GPT plugins."""
 from typing import Any, Dict, List, Optional, Tuple, TypeVar, TypedDict
-
 from auto_gpt_plugin_template import AutoGPTPluginTemplate
+from dotenv import load_dotenv
+
+# Load the users .env file into environment variables
+load_dotenv(verbose=True, override=True)
+del load_dotenv
 
 PromptGenerator = TypeVar("PromptGenerator")
 
@@ -11,16 +15,16 @@ class Message(TypedDict):
     content: str
 
 
-class DbGPTSimpleChart(AutoGPTPluginTemplate):
+class DbGPTDbDashboard(AutoGPTPluginTemplate):
     """
-    This is a template for Auto-GPT plugins.
+    This is an DbGPT plugin
     """
 
     def __init__(self):
         super().__init__()
-        self._name = "Db-GPT-SimpleChart-Template"
+        self._name = "DB-GPT-DASHBOARD-Plugin"
         self._version = "0.1.0"
-        self._description = "This is a AutoGPT plugin  to reveal simple chart."
+        self._description = "This is an DbGPT plugin to generate data analysis charts."
 
     def can_handle_on_response(self) -> bool:
         """This method is called to check that the plugin can
@@ -52,28 +56,33 @@ class DbGPTSimpleChart(AutoGPTPluginTemplate):
         Returns:
             PromptGenerator: The prompt generator.
         """
-        from .simplechart import (line_chart_excutor,  bar_chart_excutor)
+        from .db_dashboard import line_chart_executor, histogram_executor, db_schemas
+        prompt.add_constraint("You are a SQL expert. Given an input question, first create a syntactically correct mysql query to run, then look at the results of the query and return the answer.\n")
+        prompt.add_constraint("Use as few tables as possible when querying.\n")
+        prompt.add_constraint("Try to use left joins but include the complete range of the first query target.\n")
+        prompt.add_constraint("Be careful to not query for columns that do not exist. Also, pay attention to which column is in which table.\n")
+        prompt.add_constraint(f"Only use the following tables generate sql:\n{db_schemas()}\n")
 
         prompt.add_command(
-            "line_chart_excutor",
-            "Generate Line Chart",
+            "line-chart-executor",
+            "According to the user's analysis goal, generate a corresponding line chart to analyze the SQL.",
             {
-                "datas": "<list of data to be displayed corresponding to each index >",
-                "index": "<Data list of all index>",
-                "columns": "<List of data types to display, can be None>",
+                "title": "<Data analysis title name>",
+                "sql": "<Data analysis sql>"
             },
-            line_chart_excutor,
+            line_chart_executor
         )
 
         prompt.add_command(
-            "bar_chart_excutor",
-            "Bart Chart",
+            "histogram-executor",
+            "According to the user's analysis goal, generate the corresponding histogram to analyze the SQL.",
             {
-                "datas": "<datas>",
+                "title": "<Data analysis title name>",
+                "sql": "<Data analysis sql>"
             },
-            bar_chart_excutor,
+            histogram_executor
         )
-
+        
         return prompt
 
     def can_handle_on_planning(self) -> bool:
@@ -85,7 +94,7 @@ class DbGPTSimpleChart(AutoGPTPluginTemplate):
         return False
 
     def on_planning(
-            self, prompt: PromptGenerator, messages: List[Message]
+        self, prompt: PromptGenerator, messages: List[Message]
     ) -> Optional[str]:
         """This method is called before the planning chat completion is done.
 
@@ -180,7 +189,7 @@ class DbGPTSimpleChart(AutoGPTPluginTemplate):
         return False
 
     def pre_command(
-            self, command_name: str, arguments: Dict[str, Any]
+        self, command_name: str, arguments: Dict[str, Any]
     ) -> Tuple[str, Dict[str, Any]]:
         """This method is called before the command is executed.
 
@@ -214,7 +223,7 @@ class DbGPTSimpleChart(AutoGPTPluginTemplate):
         pass
 
     def can_handle_chat_completion(
-            self, messages: Dict[Any, Any], model: str, temperature: float, max_tokens: int
+        self, messages: Dict[Any, Any], model: str, temperature: float, max_tokens: int
     ) -> bool:
         """This method is called to check that the plugin can
           handle the chat_completion method.
@@ -230,7 +239,7 @@ class DbGPTSimpleChart(AutoGPTPluginTemplate):
         return False
 
     def handle_chat_completion(
-            self, messages: List[Message], model: str, temperature: float, max_tokens: int
+        self, messages: List[Message], model: str, temperature: float, max_tokens: int
     ) -> str:
         """This method is called when the chat completion is done.
 
@@ -242,28 +251,6 @@ class DbGPTSimpleChart(AutoGPTPluginTemplate):
 
         Returns:
             str: The resulting response.
-        """
-        pass
-
-    def can_handle_text_embedding(
-            self, text: str
-    ) -> bool:
-        """This method is called to check that the plugin can
-          handle the text_embedding method.
-        Args:
-            text (str): The text to be convert to embedding.
-          Returns:
-              bool: True if the plugin can handle the text_embedding method."""
-        return False
-
-    def handle_text_embedding(
-            self, text: str
-    ) -> list:
-        """This method is called when the chat completion is done.
-        Args:
-            text (str): The text to be convert to embedding.
-        Returns:
-            list: The text embedding.
         """
         pass
 

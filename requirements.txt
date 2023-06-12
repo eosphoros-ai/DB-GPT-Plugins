@@ -12,3 +12,4 @@ numpy
 pandas==1.5.2
 matplotlib==3.5.1
 pyecharts
+duckdb==0.8.0
