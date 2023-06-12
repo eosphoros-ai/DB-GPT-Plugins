@@ -11,6 +11,7 @@ from pyecharts import options as opts
 import mpld3
 import matplotlib
 import matplotlib.font_manager as fm
+
 matplotlib.use('Agg')  # 指定使用非交互式后端
 import matplotlib.pyplot as plt
 from bokeh.plotting import figure
@@ -110,8 +111,10 @@ def line_chart_executor(title: str, sql: str):
     #
     # return html
 
+
 def current_dir():
     return os.path.dirname(os.path.abspath(__file__))
+
 
 def histogram_executor(title: str, sql: str):
     df = pd.read_sql(sql, get_conn())
@@ -123,7 +126,7 @@ def histogram_executor(title: str, sql: str):
     plt.rcParams['font.sans-serif'] = [font.get_name(), 'Arial']
     fig, ax = plt.subplots(figsize=(8, 6), dpi=100)
     ax.bar(df[columns[0]].tolist(), df[columns[1]].tolist())
-    ax.set_xlabel(columns[0])
+    ax.set_xlabel(columns[0], fontproperties=font)
     ax.set_ylabel(columns[1])
     ax.set_title(title)
 
@@ -134,19 +137,12 @@ def histogram_executor(title: str, sql: str):
     data = base64.b64encode(buf.getvalue()).decode('ascii')
 
     # 生成 HTML
-    html_img = f'<img class="my-image" src="data:image/png;base64,{data}" width="1024" height="768"/>'
-    table_style = """<style> 
-      .my-image {
-        width: 800px;
-        height: 600px;
-      }
-     </style>"""
-    html = f"<html><head>{table_style}</head><body>{html_img}</body></html>"
+    html_img = f'<img class="my-image" src="data:image/png;base64,{data}" width="800" height="600"/>'
+
     with open('bar_chart.html', 'w') as file:
-        file.write(html)
+        file.write(html_img)
 
-    return html
-
+    return html_img
 
     # # 转换为 HTML 文本
     # html_text = mpld3.fig_to_html(fig)
@@ -180,6 +176,7 @@ def getJsStr():
     text = ''.join(lines)
     return text
 
+
 def __sql_execute(sql: str, db_name: str = None):
     try:
         if db_name:
@@ -197,5 +194,6 @@ def __sql_execute(sql: str, db_name: str = None):
 
 
 if __name__ == '__main__':
-    print(histogram_executor('测试', "SELECT users.city, COUNT(tran_order.order_id) AS order_count FROM users LEFT JOIN tran_order ON users.user_name = tran_order.user_name GROUP BY users.city LIMIT 5"))
+    print(histogram_executor('测试',
+                             "SELECT users.city, COUNT(tran_order.order_id) AS order_count FROM users LEFT JOIN tran_order ON users.user_name = tran_order.user_name GROUP BY users.city LIMIT 5"))
     # print(db_schemas())
