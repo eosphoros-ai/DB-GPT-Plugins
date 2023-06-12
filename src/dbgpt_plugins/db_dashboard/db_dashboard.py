@@ -114,7 +114,7 @@ def histogram_executor(title: str, sql: str):
 
     # 绘制柱状图
     plt.rcParams['font.sans-serif'] = ['SimHei']
-    fig, ax = plt.subplots(figsize=(8, 6), dpi=100)
+    fig, ax = plt.subplots(figsize=(4, 3), dpi=200)
     ax.bar(df[columns[0]].tolist(), df[columns[1]].tolist())
     ax.set_xlabel(columns[0])
     ax.set_ylabel(columns[1])
@@ -122,7 +122,7 @@ def histogram_executor(title: str, sql: str):
 
     # 将图表保存为二进制数据
     buf = io.BytesIO()
-    plt.savefig(buf, format='png')
+    plt.savefig(buf, format='png', dpi=300, transparent=True)
     buf.seek(0)
     data = base64.b64encode(buf.getvalue()).decode('ascii')
 
