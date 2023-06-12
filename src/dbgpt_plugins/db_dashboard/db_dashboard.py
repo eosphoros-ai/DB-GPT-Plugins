@@ -113,17 +113,14 @@ def histogram_executor(title: str, sql: str):
 
     columns = df.columns.tolist()
 
-    # 设置中文字体为 SimHei
-    font_path = 'path/to/simhei.ttf'
-    font = fm.FontProperties(fname=font_path)
 
     # 绘制柱状图
     plt.rcParams['font.sans-serif'] = ['SimHei']
     fig, ax = plt.subplots(figsize=(8, 6), dpi=75)
     ax.bar(df[columns[0]].tolist(), df[columns[1]].tolist())
-    ax.set_xlabel(columns[0], fontproperties=font)
-    ax.set_ylabel(columns[1], fontproperties=font)
-    ax.set_title(title, fontproperties=font)
+    ax.set_xlabel(columns[0])
+    ax.set_ylabel(columns[1])
+    ax.set_title(title)
 
     # 将图表保存为二进制数据
     buf = io.BytesIO()
