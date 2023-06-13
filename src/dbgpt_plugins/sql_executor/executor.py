@@ -5,16 +5,18 @@ import os
 import pymysql
 import pymysql.cursors
 
+
 def get_conn():
     return pymysql.connect(
-        host='127.0.0.1',
-        port=int('2883'),
-        user='mock',
-        password='mock',
-        database='mock',
-        charset='utf8mb4',
+        host="127.0.0.1",
+        port=int("2883"),
+        user="mock",
+        password="mock",
+        database="mock",
+        charset="utf8mb4",
         ssl_ca=None,
     )
+
 
 def ob_sql_executor(sql: str):
     try:
@@ -31,6 +33,7 @@ def ob_sql_executor(sql: str):
     except pymysql.err.ProgrammingError as e:
         return str(e)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # lineChart(np.random.randn(5, 2), [1, 2, 3, 4, 5], ['now', 'last'])
-     print(ob_sql_executor('show databases;'))
+    print(ob_sql_executor("show databases;"))

@@ -1,8 +1,7 @@
-"""This is a template for DB-GPT plugins."""
+"""This is a template for Auto-GPT plugins."""
 from typing import Any, Dict, List, Optional, Tuple, TypeVar, TypedDict
 
 from auto_gpt_plugin_template import AutoGPTPluginTemplate
-
 
 PromptGenerator = TypeVar("PromptGenerator")
 
@@ -12,16 +11,18 @@ class Message(TypedDict):
     content: str
 
 
-class DBGPTOceanBase(AutoGPTPluginTemplate):
+class DBGPTByteBasePlugin(AutoGPTPluginTemplate):
     """
-    This is an DB-GPT plugin to connect OceanBase.
+    This is a template for Auto-GPT plugins.
     """
 
     def __init__(self):
         super().__init__()
-        self._name = "DB-GPT-OB-Serverless-Plugin"
+        self._name = "DB-GPT-ByteBase-Plugin"
         self._version = "0.1.0"
-        self._description = "This is an DB-GPT plugin to connect OceanBase."
+        self._description = (
+            "This is a DB-GPT plugins, provide service capability to operate bytebase."
+        )
 
     def can_handle_on_response(self) -> bool:
         """This method is called to check that the plugin can
@@ -53,14 +54,126 @@ class DBGPTOceanBase(AutoGPTPluginTemplate):
         Returns:
             PromptGenerator: The prompt generator.
         """
-        from .executor import ob_sql_executor
+        from .byte_base_api import create_database
+        from .byte_base_api import create_table
+        from .byte_base_api import create_index
+        from .byte_base_api import delete_table
+        from .byte_base_api import delete_index
+        from .byte_base_api import execute_ddl
+        from .byte_base_api import create_instance
+        from .byte_base_api import create_project
+        from .byte_base_api import create_env
+        from .byte_base_api import execute_sql
 
         prompt.add_command(
-            "ob_sql_executor",
-            "Execute SQL in OceanBase Database.",
-            {"sql": "<sql>"},
-            ob_sql_executor,
+            "create_database_executor",
+            "Create database in Generic Database.",
+            {
+                "database_name": "<The name of the database to be created>",
+                "env": "<The env  of the database to be created， can use： test, prod if can't find default use test>",
+                "description": "<The description of current database>",
+            },
+            create_database,
         )
+
+        prompt.add_command(
+            "create_table_executor",
+            "create table in Generic Database.",
+            {
+                "database_name": "<The database where the new table is located>",
+                "env": "<The env  of the database to be created， can use： test, prod if can't find default use test>",
+                "statement": "<The DDL SQL expression>",
+            },
+            create_table,
+        )
+
+        prompt.add_command(
+            "create_index_executor",
+            "Create index in Generic Database.",
+            {
+                "database_name": "<The database where the new table is located>",
+                "env": "<The env  of the database to be created， can use： test, prod if can't find default use test>",
+                "statement": "<The DDL SQL expression>",
+            },
+            create_index,
+        )
+
+        prompt.add_command(
+            "delete_table_executor",
+            "Delete table in Generic Database.",
+            {
+                "database_name": "<The database where the new table is located>",
+                "env": "<The env  of the database to be created， can use： test, prod if can't find default use test>",
+                "statement": "<The DDL SQL expression>",
+            },
+            delete_table,
+        )
+
+        prompt.add_command(
+            "delete_index_executor",
+            "Delete or drop index in Generic Database.",
+            {
+                "database_name": "<The database where the new table is located>",
+                "env": "<The env  of the database to be created， can use： test, prod if can't find default use test>",
+                "statement": "<The DDL SQL expression>",
+            },
+            delete_index,
+        )
+
+        prompt.add_command(
+            "execute_ddl_executor",
+            "Execute DDL in Generic Database.",
+            {
+                "database_name": "<The database where the new table is located>",
+                "env": "<The env  of the database to be created， can use： test, prod if can't find default use test>",
+                "statement": "<The DDL SQL expression>",
+            },
+            execute_ddl,
+        )
+
+        prompt.add_command(
+            "create_instance_executor",
+            "Create instance in Generic Database.",
+            {
+                "db_type": "<The type of database, can use: mysql, mongodb, ocean base, redis, mysql default.>",
+                "instance_name": "<The name of the instance_name to be created>",
+                "server_host": "<The server host where the instance to be created, can be ip address or domain name>",
+                "server_port": "<The port to be mapped>",
+                "password": "<The password of the database instance>",
+                "env": "<The environment where the instance created>",
+            },
+            create_instance,
+        )
+
+        prompt.add_command(
+            "create_project_executor",
+            "Create project in Generic Database.",
+            {"project_name": "<the Project name>"},
+            create_project,
+        )
+
+        prompt.add_command(
+            "create_env_executor",
+            "Create env in Generic Database.",
+            {
+                "env_name": "<The environment name to be created, can use: dev, test, gray, prod>",
+                "is_prod": "<if current database environment is production>",
+                "public_strategy": "<The environment strategy>",
+            },
+            create_env,
+        )
+
+        prompt.add_command(
+            "execute_sql_executor",
+            "Execute sql in Generic Database.",
+            {
+                "database_name": "<The database where the sql executed>",
+                "env": "<The environment of the database to be created， can use： test, prod if can't find default use test>",
+                "statement": "<The SQL to execute, can be select, update, insert, delete>",
+            },
+            execute_sql,
+        )
+
         return prompt
 
     def can_handle_on_planning(self) -> bool:
@@ -229,6 +342,24 @@ class DBGPTOceanBase(AutoGPTPluginTemplate):
 
         Returns:
             str: The resulting response.
+        """
+        pass
+
+    def can_handle_text_embedding(self, text: str) -> bool:
+        """This method is called to check that the plugin can
+          handle the text_embedding method.
+        Args:
+            text (str): The text to be convert to embedding.
+          Returns:
+              bool: True if the plugin can handle the text_embedding method."""
+        return False
+
+    def handle_text_embedding(self, text: str) -> list:
+        """This method is called when the chat completion is done.
+        Args:
+            text (str): The text to be convert to embedding.
+        Returns:
+            list: The text embedding.
         """
         pass
 

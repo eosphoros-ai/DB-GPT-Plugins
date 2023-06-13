@@ -1,0 +1,5 @@
+.plugin_env
+.history/*
+.idea*
+
+venv/

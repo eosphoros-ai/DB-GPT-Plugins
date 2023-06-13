@@ -52,7 +52,7 @@ class DBGPTSimpleChart(AutoGPTPluginTemplate):
         Returns:
             PromptGenerator: The prompt generator.
         """
-        from .simplechart import (lineChart,  barChart_excutor)
+        from .simplechart import lineChart, barChart_excutor
 
         prompt.add_command(
             "lineChart",
@@ -85,7 +85,7 @@ class DBGPTSimpleChart(AutoGPTPluginTemplate):
         return False
 
     def on_planning(
-            self, prompt: PromptGenerator, messages: List[Message]
+        self, prompt: PromptGenerator, messages: List[Message]
     ) -> Optional[str]:
         """This method is called before the planning chat completion is done.
 
@@ -180,7 +180,7 @@ class DBGPTSimpleChart(AutoGPTPluginTemplate):
         return False
 
     def pre_command(
-            self, command_name: str, arguments: Dict[str, Any]
+        self, command_name: str, arguments: Dict[str, Any]
     ) -> Tuple[str, Dict[str, Any]]:
         """This method is called before the command is executed.
 
@@ -214,7 +214,7 @@ class DBGPTSimpleChart(AutoGPTPluginTemplate):
         pass
 
     def can_handle_chat_completion(
-            self, messages: Dict[Any, Any], model: str, temperature: float, max_tokens: int
+        self, messages: Dict[Any, Any], model: str, temperature: float, max_tokens: int
     ) -> bool:
         """This method is called to check that the plugin can
           handle the chat_completion method.
@@ -230,7 +230,7 @@ class DBGPTSimpleChart(AutoGPTPluginTemplate):
         return False
 
     def handle_chat_completion(
-            self, messages: List[Message], model: str, temperature: float, max_tokens: int
+        self, messages: List[Message], model: str, temperature: float, max_tokens: int
     ) -> str:
         """This method is called when the chat completion is done.
 
@@ -245,9 +245,7 @@ class DBGPTSimpleChart(AutoGPTPluginTemplate):
         """
         pass
 
-    def can_handle_text_embedding(
-            self, text: str
-    ) -> bool:
+    def can_handle_text_embedding(self, text: str) -> bool:
         """This method is called to check that the plugin can
           handle the text_embedding method.
         Args:
@@ -256,9 +254,7 @@ class DBGPTSimpleChart(AutoGPTPluginTemplate):
               bool: True if the plugin can handle the text_embedding method."""
         return False
 
-    def handle_text_embedding(
-            self, text: str
-    ) -> list:
+    def handle_text_embedding(self, text: str) -> list:
         """This method is called when the chat completion is done.
         Args:
             text (str): The text to be convert to embedding.

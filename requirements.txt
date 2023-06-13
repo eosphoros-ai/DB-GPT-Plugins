@@ -12,3 +12,6 @@ numpy
 pandas==1.5.2
 matplotlib==3.5.1
 pyecharts
+paramiko==2.8.1
+requests==2.30.0
+python-dotenv==1.0.0
