@@ -12,9 +12,13 @@ matplotlib.use('Agg')  # 指定使用非交互式后端
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
-db_type = os.getenv("DB_TYPE", "MYSQL")
+
+print("当前工作目录：", os.getcwd())
+db_type = os.getenv("DB_TYPE", "DUCKDB")
 database=os.getenv("DB_DATABASE", "gpt-user")
-duckdb_path =os.getenv("DB_DUCKDB_PATH", "db-gpt-test.db")
+default_db_path =  os.path.join(os.getcwd(), "mock_datas")
+duckdb_path =os.getenv("DB_DUCKDB_PATH", default_db_path + "/db-gpt-test.db")
+font_paht = os.path.join(os.getcwd(), "fonts")
 def get_conn():
     try:
         if db_type and db_type == "MYSQL":
@@ -72,14 +76,14 @@ def __duckdb_schemas(connect):
         table_infos.append(f"({table_name[0]}({columns_str}));")
     if not table_infos:
         raise ValueError("未能获取到正确的表结构信息！" + duckdb_path)
-    return ",".join(table_infos)
+    return "".join(table_infos)
 
 
 def line_chart_executor(title: str, sql: str):
     df = pd.read_sql(sql, get_conn())
 
     columns = df.columns.tolist()
-    font = FontProperties(fname="SimHei.ttf")
+    font = FontProperties(fname=font_paht + "/SimHei.ttf")
 
     plt.rcParams['font.family'] = ['sans-serif']
     plt.rcParams['font.sans-serif'] = [font.get_name(), 'Arial']
@@ -92,7 +96,7 @@ def line_chart_executor(title: str, sql: str):
 
     # 设置样式
     sns.set(style="ticks", color_codes=True)
-    fig, ax = plt.subplots(figsize=(8, 4), dpi=100)
+    fig, ax = plt.subplots(figsize=(8, 5), dpi=100)
     # 绘制图表
     sns.lineplot(df, x=columns[0], y=columns[1])
     plt.title(title )
@@ -117,7 +121,7 @@ def current_dir():
 def histogram_executor(title: str, sql: str):
     df = pd.read_sql(sql, get_conn())
     columns = df.columns.tolist()
-    font = FontProperties(fname="SimHei.ttf")
+    font = FontProperties(fname=font_paht + "/SimHei.ttf")
 
     # 绘制柱状图
     plt.rcParams['font.family'] = ['sans-serif']
@@ -126,7 +130,7 @@ def histogram_executor(title: str, sql: str):
           'axes.unicode_minus': False}
     # 设置样式
     sns.set(context='notebook', style="ticks", color_codes=True, rc=rc)
-    fig, ax = plt.subplots(figsize=(8, 4), dpi=100)
+    fig, ax = plt.subplots(figsize=(8, 5), dpi=100)
     # 绘制图表
     sns.barplot(df, x=columns[0], y=columns[1])
     plt.title(title )
@@ -187,5 +191,5 @@ def __sql_execute(sql: str, db_name: str = None):
 if __name__ == '__main__':
     # print(line_chart_executor('测试',
     #                          "SELECT user.city, COUNT(tran_order.order_no) AS order_count FROM user LEFT JOIN tran_order ON user.name = tran_order.user_name GROUP BY user.city LIMIT 5"))
-    # print(db_schemas())
     print(db_schemas())
+    # print(db_schemas())

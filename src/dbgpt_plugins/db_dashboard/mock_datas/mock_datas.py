@@ -117,7 +117,7 @@ if __name__ == '__main__':
             order_no = ''.join(random.choices(string.ascii_uppercase, k=3)) + ''.join(random.choices(string.digits, k=10))
             product_category = random.choice(categories)
             product_name =random.choice(categories_product[product_category])
-            amount = round(random.uniform(0, 100000), 2)
+            amount = round(random.uniform(0, 10000), 2)
             pay_status = random.choice(["SUCCESS", "FAILD", "CANCEL", "REFUND"])
             user_id = random.choice(users)[0]
             user_name =random.choice(users)[1]
