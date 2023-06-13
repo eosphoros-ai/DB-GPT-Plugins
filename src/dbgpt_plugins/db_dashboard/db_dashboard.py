@@ -5,27 +5,17 @@ import duckdb
 import pandas as pd
 import base64
 import io
-from pyecharts.charts import Line, Bar
-from pyecharts import options as opts
-
-import mpld3
 import matplotlib
-import matplotlib.font_manager as fm
-
+import seaborn as sns
+import mpld3
 matplotlib.use('Agg')  # 指定使用非交互式后端
 import matplotlib.pyplot as plt
-from bokeh.plotting import figure
-from bokeh.embed import file_html
-from bokeh.resources import INLINE
-import numpy as np
 from matplotlib.font_manager import FontProperties
-import matplotlib.font_manager as fm
-
 
 def get_conn():
     try:
-        db_type = os.getenv("DB_TYPE", "MYSQL")
-        if (db_type == "MYSQL"):
+        db_type = os.getenv("DB_TYPE", "DUCKDB")
+        if db_type and db_type == "MYSQL":
             if (db_type == "MYSQL"):
                 return pymysql.connect(
                     host=os.getenv("DB_HOST", "127.0.0.1"),
@@ -37,51 +27,69 @@ def get_conn():
                     ssl_ca=None,
                 )
         elif db_type == "DUCKDB":
-            current_dir = os.path.abspath('.')
-            test_db = current_dir + "db-gpt-test.db"
-            return duckdb.connect(database=os.getenv("DB_PATH", test_db))
+            return duckdb.connect('db-gpt-test.db')
         else:
             raise ValueError("尚未支持的数据库类型" + db_type)
+
     except Exception as e:
-        return str("数据库连接异常！" + str(e))
+        raise ValueError("数据库连接异常！" + str(e))
 
 
 def db_schemas():
+    db_type = os.getenv("DB_TYPE", "DUCKDB")
     conn = get_conn()
+    if db_type == "DUCKDB":
+        return __duckdb_schemas(conn)
+    else:
+        return __mysql_schemas(conn)
+
+
+def __mysql_schemas(connect):
     _sql = f"""
               select concat(table_name, "(" , group_concat(column_name), ")") as schema_info from information_schema.COLUMNS where table_schema="{os.getenv("DB_DATABASE")}" group by TABLE_NAME;
           """
-    with conn.cursor() as cursor:
+    with connect.cursor() as cursor:
         cursor.execute(_sql)
         results = cursor.fetchall()
     return results
+
+
+def __duckdb_schemas(connect):
+    # 获取所有表的名称
+    tables = connect.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+    table_infos = []
+    # 遍历所有表，获取其结构信息
+    for table_name in tables:
+        columns = []
+        table_info = connect.execute(f"PRAGMA table_info({table_name[0]})").fetchall()
+        for col_info in table_info:
+            columns.append(col_info[1])
+        columns_str = ",".join(columns)
+        table_infos.append(f"{table_name[0]}({columns_str})")
+    return "; ".join(table_infos)
 
 
 def line_chart_executor(title: str, sql: str):
     df = pd.read_sql(sql, get_conn())
 
     columns = df.columns.tolist()
+    font = FontProperties(fname="SimHei.ttf")
 
+    plt.rcParams['font.family'] = ['sans-serif']
+    plt.rcParams['font.sans-serif'] = [font.get_name(), 'Arial']
     # # 绘制折线图
-    # p = figure(title=title, x_axis_label=columns[0], y_axis_label=columns[1])
-    # p.line(df[columns[0]].tolist(), df[columns[1]].tolist())
-    #
-    # # 生成 HTML
-    # html = file_html(p, INLINE, title + 'Line Chart')
-    # # 打印 HTML
-    # # print(html)
-    # with open('line_chart.html', 'w') as file:
-    #     file.write(html)
-    # return html
+    # fig, ax = plt.subplots(figsize=(8, 6), dpi=100)
+    # ax.plot(df[columns[0]].tolist(), df[columns[1]].tolist())
+    # ax.set_xlabel(columns[0])
+    # ax.set_ylabel(columns[1])
+    # ax.set_title(title)
 
-    plt.rcParams['font.family'] = 'sans-serif'
-    plt.rcParams['font.sans-serif'] = ['SimHei', 'Arial']
-    # # 绘制折线图
+    # 设置样式
+    sns.set(style="ticks", color_codes=True)
     fig, ax = plt.subplots(figsize=(8, 6), dpi=100)
-    ax.plot(df[columns[0]].tolist(), df[columns[1]].tolist())
-    ax.set_xlabel(columns[0])
-    ax.set_ylabel(columns[1])
-    ax.set_title(title)
+    # 绘制图表
+    sns.lineplot(df, x=columns[0], y=columns[1])
+    plt.title(title )
 
     # 将图表保存为二进制数据
     buf = io.BytesIO()
@@ -92,25 +100,10 @@ def line_chart_executor(title: str, sql: str):
     # 生成 HTML
     html = f'<img src="data:image/png;base64,{data}"  width="800" height="600"/>'
 
-    with open('line_chart.html', 'w') as file:
-        file.write(html)
+    # with open('line_chart.html', 'w') as file:
+    #     file.write(html)
 
     return html
-    # # 转换为 HTML 文本
-    # html_text = mpld3.fig_to_html(fig)
-    # print(html_text)
-    # return html_text
-    #
-    # line = Line()
-    # line.add_xaxis(df[columns[0]].tolist())
-    # line.add_yaxis(columns[1], df[columns[1]].tolist())
-    # line.set_global_opts(title_opts=opts.TitleOpts(title=title))
-    # line.render('report.html')
-    # html = line.render_embed()
-    # html.replace("""<script type="text/javascript" src="https://assets.pyecharts.org/assets/v5/echarts.min.js"></script>""", f"""<script type="text/javascript" >{getJsStr()}</script>""")
-    #
-    # return html
-
 
 def current_dir():
     return os.path.dirname(os.path.abspath(__file__))
@@ -119,16 +112,26 @@ def current_dir():
 def histogram_executor(title: str, sql: str):
     df = pd.read_sql(sql, get_conn())
     columns = df.columns.tolist()
-    font = FontProperties(fname=f"SourceHanSansSC-Bold.otf")
+    font = FontProperties(fname="SimHei.ttf")
 
     # 绘制柱状图
-    plt.rcParams['font.family'] = 'sans-serif'
+    plt.rcParams['font.family'] = ['sans-serif']
     plt.rcParams['font.sans-serif'] = [font.get_name(), 'Arial']
+    rc = {'font.sans-serif': 'SimHei',
+          'axes.unicode_minus': False}
+    # 设置样式
+    sns.set(context='notebook', style="ticks", color_codes=True, rc=rc)
     fig, ax = plt.subplots(figsize=(8, 6), dpi=100)
-    ax.bar(df[columns[0]].tolist(), df[columns[1]].tolist())
-    ax.set_xlabel(columns[0], fontproperties=font)
-    ax.set_ylabel(columns[1])
-    ax.set_title(title)
+    # 绘制图表
+    sns.barplot(df, x=columns[0], y=columns[1])
+    plt.title(title )
+    # fig, ax = plt.subplots(figsize=(8, 6), dpi=100)
+    # ax.bar(df[columns[0]].tolist(), df[columns[1]].tolist())
+    # ax.set_xlabel(columns[0], fontproperties=font)
+    # ax.set_ylabel(columns[1])
+    # ax.set_title(title, )
+
+
 
     # 将图表保存为二进制数据
     buf = io.BytesIO()
@@ -139,27 +142,10 @@ def histogram_executor(title: str, sql: str):
     # 生成 HTML
     html_img = f'<img class="my-image" src="data:image/png;base64,{data}" width="800" height="600"/>'
 
-    with open('bar_chart.html', 'w') as file:
-        file.write(html_img)
+    # with open('bar_chart.html', 'w') as file:
+    #     file.write(html_img)
 
     return html_img
-
-    # # 转换为 HTML 文本
-    # html_text = mpld3.fig_to_html(fig)
-    # print(html_text)
-    # return html_text
-
-    # bar = (
-    #     Bar()
-    #         .add_xaxis(df[columns[0]].tolist())
-    #         .add_yaxis(columns[1], df[columns[1]].tolist())
-    #         .set_global_opts(title_opts=opts.TitleOpts(title=title))
-    # )
-    # html = bar.render_embed();
-    # html.replace("""<script type="text/javascript" src="https://assets.pyecharts.org/assets/v5/echarts.min.js"></script>""", f"""<script type="text/javascript" >{getJsStr()}</script>""")
-    # with open('bar_chart.html', 'w') as file:
-    #     file.write(html)
-    # return html
 
 
 def getJsStr():
@@ -194,6 +180,7 @@ def __sql_execute(sql: str, db_name: str = None):
 
 
 if __name__ == '__main__':
-    print(histogram_executor('测试',
-                             "SELECT users.city, COUNT(tran_order.order_id) AS order_count FROM users LEFT JOIN tran_order ON users.user_name = tran_order.user_name GROUP BY users.city LIMIT 5"))
-    # print(db_schemas())
+    print(line_chart_executor('测试',
+                             "SELECT user.city, COUNT(tran_order.order_no) AS order_count FROM user LEFT JOIN tran_order ON user.name = tran_order.user_name GROUP BY user.city LIMIT 5"))
+    # # print(db_schemas())
+    # print(__duckdb_schemas(get_conn()))
