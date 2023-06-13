@@ -61,12 +61,12 @@ class DbGPTDbDashboard(AutoGPTPluginTemplate):
         Returns:
             PromptGenerator: The prompt generator.
         """
-        from .db_dashboard import line_chart_executor, histogram_executor, db_schemas
-        prompt.add_constraint("Combine user goals and improved information to generate SQL statements for data analysis.")
+        from .db_dashboard import line_chart_executor, histogram_executor, db_schemas, db_type
+        prompt.add_constraint(f"Combine user goals and improved information to generate {db_type} SQL statements for data analysis.")
         prompt.add_constraint("Use as few tables as possible when querying.")
         prompt.add_constraint("Try to use left joins but include the complete range of the first query target.")
         prompt.add_constraint("Be careful to not query for columns that do not exist. Also, pay attention to which column is in which table.")
-        prompt.add_constraint(f"Only use the following tables generate sql:\n{db_schemas()}")
+        prompt.add_constraint(f"Only use the following tables :\n{db_schemas()}")
 
         prompt.add_command(
             "line-chart-executor",
