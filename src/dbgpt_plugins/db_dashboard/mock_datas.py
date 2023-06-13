@@ -7,9 +7,6 @@ default_db_path =  os.path.join(os.getcwd(), "mock_datas")
 duckdb_path =os.getenv("DB_DUCKDB_PATH", default_db_path + "/db-gpt-test.db")
 if __name__ == '__main__':
 
-
-
-
     def build_table(connection):
         connection.execute("""CREATE TABLE user (
               id INTEGER NOT NULL,
