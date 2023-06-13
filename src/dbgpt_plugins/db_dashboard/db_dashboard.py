@@ -92,7 +92,7 @@ def line_chart_executor(title: str, sql: str):
 
     # 设置样式
     sns.set(style="ticks", color_codes=True)
-    fig, ax = plt.subplots(figsize=(6, 4), dpi=100)
+    fig, ax = plt.subplots(figsize=(8, 4), dpi=100)
     # 绘制图表
     sns.lineplot(df, x=columns[0], y=columns[1])
     plt.title(title )
@@ -126,7 +126,7 @@ def histogram_executor(title: str, sql: str):
           'axes.unicode_minus': False}
     # 设置样式
     sns.set(context='notebook', style="ticks", color_codes=True, rc=rc)
-    fig, ax = plt.subplots(figsize=(6, 4), dpi=100)
+    fig, ax = plt.subplots(figsize=(8, 4), dpi=100)
     # 绘制图表
     sns.barplot(df, x=columns[0], y=columns[1])
     plt.title(title )
