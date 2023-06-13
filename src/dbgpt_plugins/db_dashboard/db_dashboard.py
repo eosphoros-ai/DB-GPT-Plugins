@@ -12,10 +12,12 @@ matplotlib.use('Agg')  # 指定使用非交互式后端
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
+db_type = os.getenv("DB_TYPE", "MYSQL")
+database=os.getenv("DB_DATABASE", "gpt-user")
+duckdb_path =os.getenv("DB_DUCKDB_PATH", "db-gpt-test.db")
 def get_conn():
     try:
-        db_type = os.getenv("DB_TYPE", "DUCKDB")
-        if db_type and db_type == "MYSQL":
+        if db_type and db_type == "DUCKDB":
             if (db_type == "MYSQL"):
                 return pymysql.connect(
                     host=os.getenv("DB_HOST", "127.0.0.1"),
@@ -27,7 +29,7 @@ def get_conn():
                     ssl_ca=None,
                 )
         elif db_type == "DUCKDB":
-            return duckdb.connect('db-gpt-test.db')
+            return duckdb.connect(duckdb_path)
         else:
             raise ValueError("尚未支持的数据库类型" + db_type)
 
@@ -36,7 +38,6 @@ def get_conn():
 
 
 def db_schemas():
-    db_type = os.getenv("DB_TYPE", "DUCKDB")
     conn = get_conn()
     if db_type == "DUCKDB":
         return __duckdb_schemas(conn)
@@ -46,11 +47,14 @@ def db_schemas():
 
 def __mysql_schemas(connect):
     _sql = f"""
-              select concat(table_name, "(" , group_concat(column_name), ")") as schema_info from information_schema.COLUMNS where table_schema="{os.getenv("DB_DATABASE")}" group by TABLE_NAME;
+                select concat(table_name, "(" , group_concat(column_name), ")") as schema_info from information_schema.COLUMNS where table_schema="{database}" group by TABLE_NAME;
           """
     with connect.cursor() as cursor:
         cursor.execute(_sql)
         results = cursor.fetchall()
+    print("__mysql_schemas:" + str(results))
+    if not results:
+        raise ValueError("未能获取到正确的表结构信息！" + os.getenv("DB_DATABASE"))
     return results
 
 
@@ -66,6 +70,8 @@ def __duckdb_schemas(connect):
             columns.append(col_info[1])
         columns_str = ",".join(columns)
         table_infos.append(f"{table_name[0]}({columns_str})")
+    if not table_infos:
+        raise ValueError("未能获取到正确的表结构信息！" + duckdb_path)
     return "; ".join(table_infos)
 
 
@@ -180,7 +186,7 @@ def __sql_execute(sql: str, db_name: str = None):
 
 
 if __name__ == '__main__':
-    print(line_chart_executor('测试',
-                             "SELECT user.city, COUNT(tran_order.order_no) AS order_count FROM user LEFT JOIN tran_order ON user.name = tran_order.user_name GROUP BY user.city LIMIT 5"))
-    # # print(db_schemas())
-    # print(__duckdb_schemas(get_conn()))
+    # print(line_chart_executor('测试',
+    #                          "SELECT user.city, COUNT(tran_order.order_no) AS order_count FROM user LEFT JOIN tran_order ON user.name = tran_order.user_name GROUP BY user.city LIMIT 5"))
+    # print(db_schemas())
+    print(__mysql_schemas(get_conn()))
