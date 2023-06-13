@@ -104,8 +104,7 @@ def line_chart_executor(title: str, sql: str):
     data = base64.b64encode(buf.getvalue()).decode('ascii')
 
     # 生成 HTML
-    html = f'<img src="data:image/png;base64,{data}"  width="800" height="600"/>'
-
+    html = f"""<img style='max-width: 120%; max-height: 80%;'  src="data:image/png;base64,{data}" />"""
     # with open('line_chart.html', 'w') as file:
     #     file.write(html)
 
@@ -146,7 +145,7 @@ def histogram_executor(title: str, sql: str):
     data = base64.b64encode(buf.getvalue()).decode('ascii')
 
     # 生成 HTML
-    html_img = f'<img class="my-image" src="data:image/png;base64,{data}" width="800" height="600"/>'
+    html_img = f"""<img style='max-width: 120%; max-height: 80%;'  src="data:image/png;base64,{data}" />"""
 
     # with open('bar_chart.html', 'w') as file:
     #     file.write(html_img)
