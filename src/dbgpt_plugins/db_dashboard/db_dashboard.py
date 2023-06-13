@@ -8,12 +8,12 @@ import io
 import matplotlib
 import seaborn as sns
 import mpld3
-matplotlib.use('Agg')  # 指定使用非交互式后端
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
 
-print("当前工作目录：", os.getcwd())
+print("Now Work DIr：", os.getcwd())
 db_type = os.getenv("DB_TYPE", "DUCKDB")
 database=os.getenv("DB_DATABASE", "gpt-user")
 default_db_path =  os.path.join(os.getcwd(), "mock_datas")
@@ -34,11 +34,11 @@ def get_conn():
         elif db_type == "DUCKDB":
             return duckdb.connect(duckdb_path)
         else:
-            raise ValueError("尚未支持的数据库类型" + db_type)
+            raise ValueError("Not Support Db Type!" + db_type)
 
     except Exception as e:
-        print("数据库连接异常!" + str(e))
-        raise ValueError("数据库连接异常！" + str(e))
+        print("Database connection exception!" + str(e))
+        raise ValueError("Database connection exception！" + str(e))
 
 
 def db_schemas():
@@ -58,7 +58,7 @@ def __mysql_schemas(connect):
         results = cursor.fetchall()
     print("__mysql_schemas:" + str(results))
     if not results:
-        raise ValueError("未能获取到正确的表结构信息！" + os.getenv("DB_DATABASE"))
+        raise ValueError("No table structure information was obtained！" + os.getenv("DB_DATABASE"))
     return results
 
 
@@ -75,7 +75,7 @@ def __duckdb_schemas(connect):
         columns_str = ",".join(columns)
         table_infos.append(f"({table_name[0]}({columns_str}));")
     if not table_infos:
-        raise ValueError("未能获取到正确的表结构信息！" + duckdb_path)
+        raise ValueError("No table structure information was obtained！" + duckdb_path)
     return "".join(table_infos)
 
 
@@ -83,32 +83,27 @@ def line_chart_executor(title: str, sql: str):
     df = pd.read_sql(sql, get_conn())
     columns = df.columns.tolist()
     if df.size <= 0:
-        raise ValueError("没有查询到分析数据！" + sql)
+        raise ValueError("No Data！" + sql)
 
     font = FontProperties(fname=font_paht + "/SimHei.ttf")
     plt.rcParams['font.family'] = ['sans-serif']
     plt.rcParams['font.sans-serif'] = [font.get_name(), 'Arial']
-    # # 绘制折线图
     # fig, ax = plt.subplots(figsize=(8, 6), dpi=100)
     # ax.plot(df[columns[0]].tolist(), df[columns[1]].tolist())
     # ax.set_xlabel(columns[0])
     # ax.set_ylabel(columns[1])
     # ax.set_title(title)
 
-    # 设置样式
     sns.set(style="ticks", color_codes=True)
     fig, ax = plt.subplots(figsize=(8, 5), dpi=100)
-    # 绘制图表
     sns.lineplot(df, x=columns[0], y=columns[1])
     plt.title(title )
 
-    # 将图表保存为二进制数据
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
     buf.seek(0)
     data = base64.b64encode(buf.getvalue()).decode('ascii')
 
-    # 生成 HTML
     html = f"""<img style='max-width: 120%; max-height: 80%;'  src="data:image/png;base64,{data}" />"""
     # with open('line_chart.html', 'w') as file:
     #     file.write(html)
@@ -124,16 +119,13 @@ def histogram_executor(title: str, sql: str):
     columns = df.columns.tolist()
     font = FontProperties(fname=font_paht + "/SimHei.ttf")
     if df.size <= 0:
-        raise ValueError("没有查询到分析数据！" + sql)
-    # 绘制柱状图
+        raise ValueError("No Data！" + sql)
     plt.rcParams['font.family'] = ['sans-serif']
     plt.rcParams['font.sans-serif'] = [font.get_name(), 'Arial']
     rc = {'font.sans-serif': 'SimHei',
           'axes.unicode_minus': False}
-    # 设置样式
     sns.set(context='notebook', style="ticks", color_codes=True, rc=rc)
     fig, ax = plt.subplots(figsize=(8, 5), dpi=100)
-    # 绘制图表
     sns.barplot(df, x=columns[0], y=columns[1])
     plt.title(title )
     # fig, ax = plt.subplots(figsize=(8, 6), dpi=100)
@@ -143,36 +135,17 @@ def histogram_executor(title: str, sql: str):
     # ax.set_title(title, )
 
 
-
-    # 将图表保存为二进制数据
     buf = io.BytesIO()
     plt.savefig(buf, format='png', dpi=100)
     buf.seek(0)
     data = base64.b64encode(buf.getvalue()).decode('ascii')
 
-    # 生成 HTML
     html_img = f"""<img style='max-width: 120%; max-height: 80%;'  src="data:image/png;base64,{data}" />"""
 
     # with open('bar_chart.html', 'w') as file:
     #     file.write(html_img)
 
     return html_img
-
-
-def getJsStr():
-    # 打开文件，指定读取模式（'r' 表示读取）
-    file = open('echarts.min.js', 'r')
-
-    # 逐行读取文件内容
-    lines = file.readlines()
-
-    # 关闭文件
-    file.close()
-
-    # 将每行文本内容合并为一个字符串
-    text = ''.join(lines)
-    return text
-
 
 def __sql_execute(sql: str, db_name: str = None):
     try:
@@ -187,11 +160,11 @@ def __sql_execute(sql: str, db_name: str = None):
         result = list(result)
         return field_names, result
     except pymysql.err.ProgrammingError as e:
-        return str("SQL:" + sql + "执行异常," + str(e))
+        return str("SQL:" + sql + "Execute Exception！," + str(e))
 
 
 if __name__ == '__main__':
-    # print(line_chart_executor('测试',
+    # print(line_chart_executor('TEST',
     #                          "SELECT user.city, COUNT(tran_order.order_no) AS order_count FROM user LEFT JOIN tran_order ON user.name = tran_order.user_name GROUP BY user.city LIMIT 5"))
     print(db_schemas())
     # print(db_schemas())
