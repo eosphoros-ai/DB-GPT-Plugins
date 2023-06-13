@@ -15,15 +15,11 @@ class DbGPTDbDashboard(AutoGPTPluginTemplate):
     This is an DbGPT plugin
     """
 
-
     def __init__(self):
         super().__init__()
         self._name = "DB-GPT-DASHBOARD-Plugin"
         self._version = "0.1.0"
         self._description = "This is an DbGPT plugin to generate data analysis charts."
-
-
-
 
     def can_handle_text_embedding(self, text: str) -> bool:
         pass
@@ -61,33 +57,39 @@ class DbGPTDbDashboard(AutoGPTPluginTemplate):
         Returns:
             PromptGenerator: The prompt generator.
         """
-        from .db_dashboard import line_chart_executor, histogram_executor, db_schemas, db_type
-        prompt.add_constraint(f"Combine user goals and improved information to generate {db_type} SQL statements for data analysis.")
+        from .db_dashboard import (
+            line_chart_executor,
+            histogram_executor,
+            db_schemas,
+            db_type,
+        )
+
+        prompt.add_constraint(
+            f"Combine user goals and improved information to generate {db_type} SQL statements for data analysis."
+        )
         prompt.add_constraint("Use as few tables as possible when querying.")
-        prompt.add_constraint("Try to use left joins but include the complete range of the first query target.")
-        prompt.add_constraint("Be careful to not query for columns that do not exist. Also, pay attention to which column is in which table.")
+        prompt.add_constraint(
+            "Try to use left joins but include the complete range of the first query target."
+        )
+        prompt.add_constraint(
+            "Be careful to not query for columns that do not exist. Also, pay attention to which column is in which table."
+        )
         prompt.add_constraint(f"Only use the following tables :\n{db_schemas()}")
 
         prompt.add_command(
             "line-chart-executor",
             "According to the user's analysis goal, generate a corresponding line chart to analyze the SQL.",
-            {
-                "title": "<Data analysis title name>",
-                "sql": "<Data analysis sql>"
-            },
-            line_chart_executor
+            {"title": "<Data analysis title name>", "sql": "<Data analysis sql>"},
+            line_chart_executor,
         )
 
         prompt.add_command(
             "histogram-executor",
             "According to the user's analysis goal, generate the corresponding histogram to analyze the SQL.",
-            {
-                "title": "<Data analysis title name>",
-                "sql": "<Data analysis sql>"
-            },
-            histogram_executor
+            {"title": "<Data analysis title name>", "sql": "<Data analysis sql>"},
+            histogram_executor,
         )
-        
+
         return prompt
 
     def can_handle_on_planning(self) -> bool:

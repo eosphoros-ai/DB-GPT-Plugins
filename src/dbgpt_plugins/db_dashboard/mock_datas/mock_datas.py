@@ -3,13 +3,11 @@ import string
 import duckdb
 from datetime import datetime, timedelta
 
-if __name__ == '__main__':
-
-
-
+if __name__ == "__main__":
 
     def build_table(connection):
-        connection.execute("""CREATE TABLE user (
+        connection.execute(
+            """CREATE TABLE user (
               id INTEGER NOT NULL,
               name VARCHAR,
               email VARCHAR,
@@ -21,10 +19,11 @@ if __name__ == '__main__':
               create_time TIMESTAMP,
               update_time TIMESTAMP,
               CONSTRAINT USER_PK PRIMARY KEY (id)
-          );""")
+          );"""
+        )
 
-
-        connection.execute("""CREATE TABLE tran_order (
+        connection.execute(
+            """CREATE TABLE tran_order (
               id INTEGER NOT NULL,
               order_no VARCHAR,
               product_name VARCHAR,
@@ -36,28 +35,30 @@ if __name__ == '__main__':
               create_time TIMESTAMP,
               update_time TIMESTAMP,
               CONSTRAINT ORDER_PK PRIMARY KEY (id)
-          );""")
+          );"""
+        )
 
-
-    def user_build(names: [], country: str, grander: str = 'Male')->[]:
-        countries = ['China', 'US', 'India', 'Indonesia', 'Pakistan']  # 国家列表
-        cities = {'China': ['Beijing', 'Shanghai', 'Guangzhou', 'Shenzhen', 'Hangzhou'],
-                  'US': ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'],
-                  'India': ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai'],
-                  'Indonesia': ['Jakarta', 'Surabaya', 'Medan', 'Bandung', 'Makassar'],
-                  'Pakistan': ['Karachi', 'Lahore', 'Faisalabad', 'Rawalpindi', 'Multan']}  # 城市列表
+    def user_build(names: [], country: str, grander: str = "Male") -> []:
+        countries = ["China", "US", "India", "Indonesia", "Pakistan"]  # 国家列表
+        cities = {
+            "China": ["Beijing", "Shanghai", "Guangzhou", "Shenzhen", "Hangzhou"],
+            "US": ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix"],
+            "India": ["Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai"],
+            "Indonesia": ["Jakarta", "Surabaya", "Medan", "Bandung", "Makassar"],
+            "Pakistan": ["Karachi", "Lahore", "Faisalabad", "Rawalpindi", "Multan"],
+        }  # 城市列表
         users = []
-        for i in range(1, len(names)+ 1):
+        for i in range(1, len(names) + 1):
             if grander == "Male":
-                id =  int(str(countries.index(country) + 1) + "10" )  +  i
+                id = int(str(countries.index(country) + 1) + "10") + i
             else:
-                id = int(str(countries.index(country) + 1)  + "20") + i
+                id = int(str(countries.index(country) + 1) + "20") + i
 
             name = names[i - 1]
-            email = f'{names}@example.com'
-            mobile = ''.join(random.choices(string.digits, k=10))
+            email = f"{names}@example.com"
+            mobile = "".join(random.choices(string.digits, k=10))
             gender = grander
-            birth = f'19{random.randint(60, 99)}-{random.randint(1, 12):02d}-{random.randint(1, 28):02d}'
+            birth = f"19{random.randint(60, 99)}-{random.randint(1, 12):02d}-{random.randint(1, 28):02d}"
             country = country
             city = random.choice(cities[country])
 
@@ -69,58 +70,67 @@ if __name__ == '__main__':
             start = datetime(year, 1, 1)
             end = datetime(year, 12, 31)
             random_date = start + timedelta(days=random.randint(0, (end - start).days))
-            random_time = datetime.combine(random_date, datetime.min.time()) + timedelta(
-                seconds=random.randint(0, 24 * 60 * 60 - 1))
+            random_time = datetime.combine(
+                random_date, datetime.min.time()
+            ) + timedelta(seconds=random.randint(0, 24 * 60 * 60 - 1))
 
             # 将日期和时间格式化为字符串
             random_datetime_str = random_time.strftime("%Y-%m-%d %H:%M:%S")
-            create_time =random_datetime_str
-            users.append((id, name, email, mobile, gender, birth, country, city, create_time))
+            create_time = random_datetime_str
+            users.append(
+                (id, name, email, mobile, gender, birth, country, city, create_time)
+            )
         return users
 
     def gnerate_all_users(cursor):
         users = []
         users_f = ["ZhangWei", "LiQiang", "ZhangSan", "LiSi"]
-        users.extend(user_build(users_f, "China", 'Male'))
+        users.extend(user_build(users_f, "China", "Male"))
         users_m = ["Hanmeimei", "", "LiNa", "ZhangLi", "ZhangMing"]
-        users.extend(user_build(users_m, "China", 'Female'))
+        users.extend(user_build(users_m, "China", "Female"))
 
         users1_f = ["James", "John", "David", "Richard"]
-        users.extend(user_build(users1_f, "US", 'Male'))
+        users.extend(user_build(users1_f, "US", "Male"))
         users1_m = ["Mary", "Patricia", "Sarah"]
-        users.extend(user_build(users1_m, "US", 'Female'))
+        users.extend(user_build(users1_m, "US", "Female"))
 
         users2_f = ["Ravi", "Rajesh", "Ajay", "Arjun", "Sanjay"]
-        users.extend(user_build(users2_f, "India", 'Male'))
+        users.extend(user_build(users2_f, "India", "Male"))
         users2_m = ["Priya", "Sushma", "Pooja", "Swati"]
-        users.extend(user_build(users2_m, "India", 'Female'))
+        users.extend(user_build(users2_m, "India", "Female"))
         for user in users:
             cursor.execute(
-                'INSERT INTO user (id, name, email, mobile, gender, birth, country, city, create_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                user)
+                "INSERT INTO user (id, name, email, mobile, gender, birth, country, city, create_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                user,
+            )
         cursor.commit()
 
         return users
+
     def gnerate_all_orders(users, cursor):
         orders = []
         orders_num = 200
         categories = ["Clothing", "Food", "Home Appliance", "Mother and Baby", "Travel"]
 
-        categories_product = {'Clothing': ['T-shirt', 'Jeans', 'Skirt', 'Other'],
-                  'Food': ['Snack', 'Fruit'],
-                  'Home Appliance': ['Refrigerator', 'Television', 'Air conditioner'],
-                  'Mother and Baby': ['Diapers', 'Milk Powder', 'Stroller', 'Toy'],
-                  'Travel': ['Tent', 'Fishing Rod', 'Bike', 'Rawalpindi', 'Multan']}
+        categories_product = {
+            "Clothing": ["T-shirt", "Jeans", "Skirt", "Other"],
+            "Food": ["Snack", "Fruit"],
+            "Home Appliance": ["Refrigerator", "Television", "Air conditioner"],
+            "Mother and Baby": ["Diapers", "Milk Powder", "Stroller", "Toy"],
+            "Travel": ["Tent", "Fishing Rod", "Bike", "Rawalpindi", "Multan"],
+        }
 
         for i in range(1, orders_num + 1):
             id = i
-            order_no = ''.join(random.choices(string.ascii_uppercase, k=3)) + ''.join(random.choices(string.digits, k=10))
+            order_no = "".join(random.choices(string.ascii_uppercase, k=3)) + "".join(
+                random.choices(string.digits, k=10)
+            )
             product_category = random.choice(categories)
-            product_name =random.choice(categories_product[product_category])
+            product_name = random.choice(categories_product[product_category])
             amount = round(random.uniform(0, 10000), 2)
             pay_status = random.choice(["SUCCESS", "FAILD", "CANCEL", "REFUND"])
             user_id = random.choice(users)[0]
-            user_name =random.choice(users)[1]
+            user_name = random.choice(users)[1]
 
             # 获取当前年份
             now = datetime.now()
@@ -130,22 +140,34 @@ if __name__ == '__main__':
             start = datetime(year, 1, 1)
             end = datetime(year, 12, 31)
             random_date = start + timedelta(days=random.randint(0, (end - start).days))
-            random_time = datetime.combine(random_date, datetime.min.time()) + timedelta(
-                seconds=random.randint(0, 24 * 60 * 60 - 1))
+            random_time = datetime.combine(
+                random_date, datetime.min.time()
+            ) + timedelta(seconds=random.randint(0, 24 * 60 * 60 - 1))
 
             # 将日期和时间格式化为字符串
             random_datetime_str = random_time.strftime("%Y-%m-%d %H:%M:%S")
             create_time = random_datetime_str
 
-            order = (id, order_no, product_category, product_name, amount, pay_status, user_id, user_name, create_time)
+            order = (
+                id,
+                order_no,
+                product_category,
+                product_name,
+                amount,
+                pay_status,
+                user_id,
+                user_name,
+                create_time,
+            )
             cursor.execute(
-                'INSERT INTO tran_order (id, order_no, product_name, product_category, amount, pay_status, user_id, user_name, create_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                order)
+                "INSERT INTO tran_order (id, order_no, product_name, product_category, amount, pay_status, user_id, user_name, create_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                order,
+            )
 
         cursor.commit()
 
     # 连接 DuckDB 数据库
-    connection = duckdb.connect('db-gpt-test.db')
+    connection = duckdb.connect("db-gpt-test.db")
     # 在数据库中创建表
     build_table(connection)
     # 提交事务
@@ -162,13 +184,11 @@ if __name__ == '__main__':
     # 提交事务
     connection.commit()
 
-
     # 查询测试数据
-    cursor.execute('SELECT * FROM user')
+    cursor.execute("SELECT * FROM user")
     data = cursor.fetchall()
     print(data)
 
-
-    cursor.execute('SELECT count(*) FROM tran_order')
+    cursor.execute("SELECT count(*) FROM tran_order")
     data = cursor.fetchall()
-    print('订单数量:' + str(data))
+    print("订单数量:" + str(data))
