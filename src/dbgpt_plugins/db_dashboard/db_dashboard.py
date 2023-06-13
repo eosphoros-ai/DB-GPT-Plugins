@@ -12,7 +12,7 @@ matplotlib.use('Agg')  # 指定使用非交互式后端
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
-db_type = os.getenv("DB_TYPE", "DUCKDB")
+db_type = os.getenv("DB_TYPE", "MYSQL")
 database=os.getenv("DB_DATABASE", "gpt-user")
 duckdb_path =os.getenv("DB_DUCKDB_PATH", "db-gpt-test.db")
 def get_conn():
@@ -69,10 +69,10 @@ def __duckdb_schemas(connect):
         for col_info in table_info:
             columns.append(col_info[1])
         columns_str = ",".join(columns)
-        table_infos.append(f"{table_name[0]}({columns_str})")
+        table_infos.append(f"({table_name[0]}({columns_str}));")
     if not table_infos:
         raise ValueError("未能获取到正确的表结构信息！" + duckdb_path)
-    return "\n".join(table_infos)
+    return ",".join(table_infos)
 
 
 def line_chart_executor(title: str, sql: str):
