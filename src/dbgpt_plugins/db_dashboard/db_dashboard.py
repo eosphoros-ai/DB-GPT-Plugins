@@ -72,7 +72,7 @@ def __duckdb_schemas(connect):
         table_infos.append(f"{table_name[0]}({columns_str})")
     if not table_infos:
         raise ValueError("未能获取到正确的表结构信息！" + duckdb_path)
-    return "; ".join(table_infos)
+    return "\n".join(table_infos)
 
 
 def line_chart_executor(title: str, sql: str):
