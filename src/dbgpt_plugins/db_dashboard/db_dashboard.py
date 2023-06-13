@@ -12,28 +12,28 @@ matplotlib.use('Agg')  # 指定使用非交互式后端
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
-db_type = os.getenv("DB_TYPE", "MYSQL")
+db_type = os.getenv("DB_TYPE", "DUCKDB")
 database=os.getenv("DB_DATABASE", "gpt-user")
 duckdb_path =os.getenv("DB_DUCKDB_PATH", "db-gpt-test.db")
 def get_conn():
     try:
-        if db_type and db_type == "DUCKDB":
-            if (db_type == "MYSQL"):
-                return pymysql.connect(
-                    host=os.getenv("DB_HOST", "127.0.0.1"),
-                    port=int(os.getenv("DB_PORT", 3306), ),
-                    user=os.getenv("DB_USER", "root"),
-                    password=os.getenv("DB_PASSWORD", "aa123456"),
-                    database=os.getenv("DB_DATABASE", "gpt-user"),
-                    charset='utf8mb4',
-                    ssl_ca=None,
-                )
+        if db_type and db_type == "MYSQL":
+            return pymysql.connect(
+                host=os.getenv("DB_HOST", "127.0.0.1"),
+                port=int(os.getenv("DB_PORT", 3306), ),
+                user=os.getenv("DB_USER", "root"),
+                password=os.getenv("DB_PASSWORD", "aa123456"),
+                database=os.getenv("DB_DATABASE", "gpt-user"),
+                charset='utf8mb4',
+                ssl_ca=None,
+            )
         elif db_type == "DUCKDB":
             return duckdb.connect(duckdb_path)
         else:
             raise ValueError("尚未支持的数据库类型" + db_type)
 
     except Exception as e:
+        print("数据库连接异常!" + str(e))
         raise ValueError("数据库连接异常！" + str(e))
 
 
@@ -189,4 +189,4 @@ if __name__ == '__main__':
     # print(line_chart_executor('测试',
     #                          "SELECT user.city, COUNT(tran_order.order_no) AS order_count FROM user LEFT JOIN tran_order ON user.name = tran_order.user_name GROUP BY user.city LIMIT 5"))
     # print(db_schemas())
-    print(__mysql_schemas(get_conn()))
+    print(db_schemas())
