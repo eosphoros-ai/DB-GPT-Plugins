@@ -8,8 +8,8 @@ __pycache__/
 
 message/
 
+.DS_Store
 .env
-.idea
 .vscode
 .idea
 .chroma

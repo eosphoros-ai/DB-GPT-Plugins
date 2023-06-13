@@ -27,7 +27,9 @@ class DbGPTGenericDB(AutoGPTPluginTemplate):
         super().__init__()
         self._name = "DB-GPT-SQL-Execution-Plugin"
         self._version = "0.1.0"
-        self._description = "This is an DbGPT plugin to connect Generic Db And Execute SQL."
+        self._description = (
+            "This is an DbGPT plugin to connect Generic Db And Execute SQL."
+        )
 
     def can_handle_on_response(self) -> bool:
         """This method is called to check that the plugin can
@@ -64,10 +66,8 @@ class DbGPTGenericDB(AutoGPTPluginTemplate):
         prompt.add_command(
             "db_sql_executor",
             "Execute SQL in Generic Database.",
-            {
-                "sql": "<sql>"
-            },
-            db_sql_executor
+            {"sql": "<sql>"},
+            db_sql_executor,
         )
         return prompt
 
