@@ -9,7 +9,7 @@ import paramiko
 from dotenv import load_dotenv
 
 # only work for test, if you load current plugin in your project, please add related CONFIGs into you env variables.
-load_dotenv("../../.plugin_env")
+load_dotenv("../../../.plugin_env")
 
 # the bate_base service address.
 BYTEBASE_DOMAIN = os.getenv("BYTE_BASE_DOMAIN", "xxx")
@@ -42,8 +42,7 @@ BB_DATABASE_DETAIL_PAGE_TEMPLATE = BYTEBASE_DOMAIN + "/db/{}-{}#overview"
 ALLOWED_ENVIRONMENTS = {"dev", "test", "prod"}
 BB_PING = "/api/sql/ping"
 BB_CREATE_INSTANCE = "/api/instance"
-BB_QUERY_SQL = "/api/sql/execute"
-
+BB_QUERY_SQL = "/api/sql/execute/admin"
 
 class EnvEnum(enum.Enum):
     DEV = "dev"
@@ -359,9 +358,7 @@ def execute_sql(database_name: str, env: str, statement: str):
         resp
         and resp["data"]
         and resp["data"]["attributes"]
-        and resp["data"]["attributes"]["adviceList"]
-        and resp["data"]["attributes"]["adviceList"][0]
-        and resp["data"]["attributes"]["adviceList"][0]["status"] == "SUCCESS"
+        and (resp["data"]["attributes"]["error"] is None or resp["data"]["attributes"]["error"] == "")
     ):
         single_sql_result_list = resp["data"]["attributes"]["singleSQLResultList"]
         if (
@@ -371,6 +368,7 @@ def execute_sql(database_name: str, env: str, statement: str):
         ):
             json_data = json.loads(single_sql_result_list[0]["data"])
             ret = ""
+            ret = ret + str(json_data[0]) + "\n"
             for data in json_data[2]:
                 ret = ret + str(data) + "\n"
             return ret
@@ -955,5 +953,20 @@ def is_single_line_no_space(s):
 # print(envlist)
 
 # execute sql test ##############################################################
-result = execute_sql("dbgpt_shine", "prod", "select * from t_job limit 1000;\n")
-print(result)
+# result = execute_sql("dbgpt_shine", "prod", "select * from t_job limit 1000;\n")
+
+# result = execute_sql("dbgpt_shine", "prod", """
+# INSERT INTO t_job (id, name, owner, status, gmt_create, gmt_modify)
+# VALUES (100, 'Job 1', 'Owner 1', 'Pending', NOW(), NOW()),
+#        (101, 'Job 2', 'Owner 2', 'In Progress', NOW(), NOW()),
+#        (102, 'Job 3', 'Owner 3', 'Completed', NOW(), NOW()),
+#        (103, 'Job 4', 'Owner 4', 'Pending', NOW(), NOW()),
+#        (104, 'Job 5', 'Owner 5', 'In Progress', NOW(), NOW());
+# """)
+#
+#
+# result = execute_sql("dbgpt_shine", "prod", """
+# delete from t_job where id = 105;
+# """)
+#
+# print(result)
