@@ -62,7 +62,7 @@ class DbGPTDbDashboard(AutoGPTPluginTemplate):
             PromptGenerator: The prompt generator.
         """
         from .db_dashboard import line_chart_executor, histogram_executor, db_schemas
-        prompt.add_constraint("You are a SQL expert. Given an input question, first create a syntactically correct mysql query to run, then look at the results of the query and return the answer.\n")
+        prompt.add_constraint("Given an input question, first create a syntactically correct sql query to run, then look at the results of the query and return the answer.\n")
         prompt.add_constraint("Use as few tables as possible when querying.\n")
         prompt.add_constraint("Try to use left joins but include the complete range of the first query target.\n")
         prompt.add_constraint("Be careful to not query for columns that do not exist. Also, pay attention to which column is in which table.\n")
