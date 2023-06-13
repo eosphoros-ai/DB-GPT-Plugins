@@ -12,6 +12,10 @@
     DB_USER=root
     DB_PASSWORD=aa123456
 ```
+#### 4.If the default test library cannot be used and an error occurs, you can run mock_datas.py in the plugin to generate a new default test data
+``` python
+    python mock_datas.py
+```
 # Use Cases:
 ```
     Plugin Mode -> [select dashboard plugin] -> [say to ai]:Use a histogram to analyze the total order amount of users in different cities

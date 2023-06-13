@@ -1,8 +1,10 @@
 import random
 import string
+import os
 import duckdb
 from datetime import datetime, timedelta
-
+default_db_path =  os.path.join(os.getcwd(), "mock_datas")
+duckdb_path =os.getenv("DB_DUCKDB_PATH", default_db_path + "/db-gpt-test.db")
 if __name__ == '__main__':
 
 
@@ -145,7 +147,7 @@ if __name__ == '__main__':
         cursor.commit()
 
     # 连接 DuckDB 数据库
-    connection = duckdb.connect('db-gpt-test.db')
+    connection = duckdb.connect(duckdb_path)
     # 在数据库中创建表
     build_table(connection)
     # 提交事务
