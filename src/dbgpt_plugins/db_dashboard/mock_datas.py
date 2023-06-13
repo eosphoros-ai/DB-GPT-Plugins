@@ -76,7 +76,6 @@ if __name__ == "__main__":
                 random_date, datetime.min.time()
             ) + timedelta(seconds=random.randint(0, 24 * 60 * 60 - 1))
 
-            # 将日期和时间格式化为字符串
             random_datetime_str = random_time.strftime("%Y-%m-%d %H:%M:%S")
             create_time = random_datetime_str
             users.append(

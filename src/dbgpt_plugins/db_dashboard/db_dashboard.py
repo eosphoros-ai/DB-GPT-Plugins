@@ -75,7 +75,6 @@ def __duckdb_schemas(connect):
         "SELECT name FROM sqlite_master WHERE type='table'"
     ).fetchall()
     table_infos = []
-    # 遍历所有表，获取其结构信息
     for table_name in tables:
         columns = []
         table_info = connect.execute(f"PRAGMA table_info({table_name[0]})").fetchall()
