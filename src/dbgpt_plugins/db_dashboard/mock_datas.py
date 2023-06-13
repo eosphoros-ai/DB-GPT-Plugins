@@ -1,7 +1,11 @@
 import random
 import string
+import os
 import duckdb
 from datetime import datetime, timedelta
+
+default_db_path =  os.path.join(os.getcwd(), "mock_datas")
+duckdb_path =os.getenv("DB_DUCKDB_PATH", default_db_path + "/db-gpt-test.db")
 
 if __name__ == "__main__":
 
@@ -46,7 +50,7 @@ if __name__ == "__main__":
             "India": ["Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai"],
             "Indonesia": ["Jakarta", "Surabaya", "Medan", "Bandung", "Makassar"],
             "Pakistan": ["Karachi", "Lahore", "Faisalabad", "Rawalpindi", "Multan"],
-        }  # 城市列表
+        }
         users = []
         for i in range(1, len(names) + 1):
             if grander == "Male":
@@ -62,11 +66,9 @@ if __name__ == "__main__":
             country = country
             city = random.choice(cities[country])
 
-            # 获取当前年份
             now = datetime.now()
             year = now.year
 
-            # 生成随机日期和时间
             start = datetime(year, 1, 1)
             end = datetime(year, 12, 31)
             random_date = start + timedelta(days=random.randint(0, (end - start).days))
@@ -132,11 +134,9 @@ if __name__ == "__main__":
             user_id = random.choice(users)[0]
             user_name = random.choice(users)[1]
 
-            # 获取当前年份
             now = datetime.now()
             year = now.year
 
-            # 生成随机日期和时间
             start = datetime(year, 1, 1)
             end = datetime(year, 12, 31)
             random_date = start + timedelta(days=random.randint(0, (end - start).days))
@@ -144,7 +144,6 @@ if __name__ == "__main__":
                 random_date, datetime.min.time()
             ) + timedelta(seconds=random.randint(0, 24 * 60 * 60 - 1))
 
-            # 将日期和时间格式化为字符串
             random_datetime_str = random_time.strftime("%Y-%m-%d %H:%M:%S")
             create_time = random_datetime_str
 
@@ -166,29 +165,27 @@ if __name__ == "__main__":
 
         cursor.commit()
 
-    # 连接 DuckDB 数据库
-    connection = duckdb.connect("db-gpt-test.db")
-    # 在数据库中创建表
+
+    connection = duckdb.connect(duckdb_path)
+
+
     build_table(connection)
-    # 提交事务
+
     connection.commit()
-    # 插入测试数据
+
     cursor = connection.cursor()
 
-    # 准备用户数据
     users = gnerate_all_users(cursor)
 
-    # 准备订单数据
+
     gnerate_all_orders(users, cursor)
 
-    # 提交事务
     connection.commit()
 
-    # 查询测试数据
     cursor.execute("SELECT * FROM user")
     data = cursor.fetchall()
     print(data)
 
     cursor.execute("SELECT count(*) FROM tran_order")
     data = cursor.fetchall()
-    print("订单数量:" + str(data))
+    print("orders:" + str(data))
