@@ -12,5 +12,9 @@
     DB_USER=root
     DB_PASSWORD=aa123456
 ```
+# Use Cases:
+```
+    Plugin Mode -> [select dashboard plugin] -> [say to ai]:Use a histogram to analyze the total order amount of users in different cities
+```
 
 *There are still Chinese adaptation problems in the currently displayed charts to be resolved
