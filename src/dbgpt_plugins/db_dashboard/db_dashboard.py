@@ -81,10 +81,11 @@ def __duckdb_schemas(connect):
 
 def line_chart_executor(title: str, sql: str):
     df = pd.read_sql(sql, get_conn())
-
     columns = df.columns.tolist()
-    font = FontProperties(fname=font_paht + "/SimHei.ttf")
+    if df.size <= 0:
+        raise ValueError("没有查询到分析数据！" + sql)
 
+    font = FontProperties(fname=font_paht + "/SimHei.ttf")
     plt.rcParams['font.family'] = ['sans-serif']
     plt.rcParams['font.sans-serif'] = [font.get_name(), 'Arial']
     # # 绘制折线图
@@ -122,7 +123,8 @@ def histogram_executor(title: str, sql: str):
     df = pd.read_sql(sql, get_conn())
     columns = df.columns.tolist()
     font = FontProperties(fname=font_paht + "/SimHei.ttf")
-
+    if df.size <= 0:
+        raise ValueError("没有查询到分析数据！" + sql)
     # 绘制柱状图
     plt.rcParams['font.family'] = ['sans-serif']
     plt.rcParams['font.sans-serif'] = [font.get_name(), 'Arial']
