@@ -4,8 +4,8 @@ import os
 import duckdb
 from datetime import datetime, timedelta
 
-default_db_path =  os.path.join(os.getcwd(), "mock_datas")
-duckdb_path =os.getenv("DB_DUCKDB_PATH", default_db_path + "/db-gpt-test.db")
+default_db_path = os.path.join(os.getcwd(), "mock_datas")
+duckdb_path = os.getenv("DB_DUCKDB_PATH", default_db_path + "/db-gpt-test.db")
 
 if __name__ == "__main__":
 
@@ -165,9 +165,7 @@ if __name__ == "__main__":
 
         cursor.commit()
 
-
     connection = duckdb.connect(duckdb_path)
-
 
     build_table(connection)
 
@@ -176,7 +174,6 @@ if __name__ == "__main__":
     cursor = connection.cursor()
 
     users = gnerate_all_users(cursor)
-
 
     gnerate_all_orders(users, cursor)
 
