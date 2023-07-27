@@ -40,4 +40,4 @@ ALLOWLISTED_PLUGINS=example-plugin1,example-plugin2,etc in your .env file to all
 
 
 # Get Help
-For more information, visit the [**Discord**](https://discord.gg/xfNDzZ9t) server.
+For more information, visit the [**Discord**](https://discord.gg/jDD5FwHh) server.
