@@ -42,8 +42,8 @@ def _baidu_search(query: str, num_results=8):
 def search_to_view(results):
     view: str = ""
     for item in results:
-        view = view + f"### [{item['title']}]({item['href']})<br> "
-        view = view + f"\n> {item['snippet']}<br><br>   \n"
+        view = view + f" ### [{item['title']}]({item['href']})\\n"
+        view = view + f" >{item['snippet']} \\n"
     return view
 
 
