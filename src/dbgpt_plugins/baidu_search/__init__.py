@@ -47,9 +47,6 @@ class AutoGPTBaiduSearch(AutoGPTPluginTemplate):
                 "Warning: Baidu-Search-Plugin is not fully functional. "
                 "Please set the SEARCH_ENGINE and BAIDU_COOKIE environment variables."
             )
-            raise ValueError(f"Current search engine is {self.search_engine}, please configure cookie information in .env ")
-
-
         return prompt
 
     def can_handle_pre_command(self) -> bool:

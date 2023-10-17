@@ -10,9 +10,13 @@ def _baidu_search(query: str, num_results=8):
     '''
     Perform a Baidu search and return the results as a JSON string.
     '''
+    engine_cookie = os.getenv("BAIDU_COOKIE")
+    search_engine = os.getenv("SEARCH_ENGINE", "baidu")
+    if not engine_cookie:
+        raise ValueError(f"Current search engine is {search_engine}, please configure cookie information in .env ")
 
     headers = {
-        'Cookie': os.getenv("BAIDU_COOKIE"),
+        'Cookie': engine_cookie,
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:112.0) Gecko/20100101 Firefox/112.0"
     }
     url = f'https://www.baidu.com/s?wd={query}&rn={num_results}'
