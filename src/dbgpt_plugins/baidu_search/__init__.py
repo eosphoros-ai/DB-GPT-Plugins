@@ -22,10 +22,12 @@ class AutoGPTBaiduSearch(AutoGPTPluginTemplate):
         self._description = (
             "This plugin performs Baidu searches using the provided query."
         )
+        self.search_engine =  os.getenv("SEARCH_ENGINE", "baidu")
+        self.engine_cookie =  os.getenv("BAIDU_COOKIE")
         self.load_commands = (
-            os.getenv("SEARCH_ENGINE")
-            and os.getenv("SEARCH_ENGINE").lower() == "baidu"
-            and os.getenv("BAIDU_COOKIE")
+            self.search_engine
+            and self.search_engine.lower() == "baidu"
+            and self.engine_cookie
         )
 
     def can_handle_post_prompt(self) -> bool:
@@ -45,6 +47,7 @@ class AutoGPTBaiduSearch(AutoGPTPluginTemplate):
                 "Warning: Baidu-Search-Plugin is not fully functional. "
                 "Please set the SEARCH_ENGINE and BAIDU_COOKIE environment variables."
             )
+            raise ValueError(f"Current search engine is {self.search_engine}, please configure cookie information in .env ")
 
 
         return prompt
