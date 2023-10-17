@@ -27,7 +27,6 @@ class AutoGPTBaiduSearch(AutoGPTPluginTemplate):
         self.load_commands = (
             self.search_engine
             and self.search_engine.lower() == "baidu"
-            and self.engine_cookie
         )
 
     def can_handle_post_prompt(self) -> bool:
