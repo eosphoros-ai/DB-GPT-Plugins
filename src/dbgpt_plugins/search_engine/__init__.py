@@ -5,46 +5,63 @@ from typing import Any, Dict, List, Optional, Tuple, TypedDict, TypeVar
 from auto_gpt_plugin_template import AutoGPTPluginTemplate
 
 from .baidu_search import _baidu_search
+from .google_search import _google_search
+from .bing_search import _bing_search
 
 PromptGenerator = TypeVar("PromptGenerator")
-
 
 class Message(TypedDict):
     role: str
     content: str
 
-
-class AutoGPTBaiduSearch(AutoGPTPluginTemplate):
+class AutoGPTSearchEngine(AutoGPTPluginTemplate):
     def __init__(self):
-        super().__init__()
-        self._name = "Baidu-Search-Plugin"
-        self._version = "0.1.0"
-        self._description = (
-            "This plugin performs Baidu searches using the provided query."
-        )
-        self.search_engine =  os.getenv("SEARCH_ENGINE", "baidu")
-        self.engine_cookie =  os.getenv("BAIDU_COOKIE")
-        self.load_commands = (
-            self.search_engine
-            and self.search_engine.lower() == "baidu"
-        )
+        try:
+            super().__init__()
+            self._name = "Search-Engine-Plugin"
+            self._version = "0.1.0"
+            self._description = (
+                "This plug-in provides search for Internet information."
+            )
+            self.search_engine = os.getenv("SEARCH_ENGINE")
+            language = os.getenv("LANGUAGE")
+            if self.search_engine is None:
+                if language is not None and language == "en":
+                    self.search_engine = "google"
+                else:
+                    self.search_engine = "baidu"
+        except Exception as e:
+            print("init error!" + str(e))
+
+            
 
     def can_handle_post_prompt(self) -> bool:
         return True
 
     def post_prompt(self, prompt: PromptGenerator) -> PromptGenerator:
-        if self.load_commands:
+        if self.search_engine == "google":
             # Add Baidu Search command
             prompt.add_command(
-                "Baidu Search",
+                "Internet information search engine",
+                "google_search",
+                {"query": "<query>"},
+                _google_search,
+            )
+        elif self.search_engine == "bing":
+            # Add Baidu Search command
+            prompt.add_command(
+                "Internet information search engine",
+                "bing_search",
+                {"query": "<query>"},
+                _bing_search,
+            )
+        else:
+            # Add Baidu Search command
+            prompt.add_command(
+                "Internet information search engine",
                 "baidu_search",
                 {"query": "<query>"},
                 _baidu_search,
-            )
-        else:
-            print(
-                "Warning: Baidu-Search-Plugin is not fully functional. "
-                "Please set the SEARCH_ENGINE and BAIDU_COOKIE environment variables."
             )
         return prompt
 
@@ -54,10 +71,13 @@ class AutoGPTBaiduSearch(AutoGPTPluginTemplate):
     def pre_command(
         self, command_name: str, arguments: Dict[str, Any]
     ) -> Tuple[str, Dict[str, Any]]:
-        if command_name == "google" and self.load_commands:
-            return "baidu_search", {"query": arguments["query"]}
+        print(f"pre_command:{command_name},{arguments}")
+        if self.search_engine == "google":
+            return "google_search", {"query": arguments["query"]}
+        elif self.search_engine == "bing":
+            return "bing_search", {"query": arguments["query"]}
         else:
-            return command_name, arguments
+            return "baidu_search", {"query": arguments["query"]}
 
     def can_handle_post_command(self) -> bool:
         return False
@@ -134,3 +154,4 @@ class AutoGPTBaiduSearch(AutoGPTPluginTemplate):
 
     def report(self, message: str) -> None:
         pass
+
