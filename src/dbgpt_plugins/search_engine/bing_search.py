@@ -19,7 +19,7 @@ def _bing_search(query: str, num_results=8) -> str:
     """
     subscription_key = os.getenv("BING_API_KEY")
     if subscription_key is None:
-        raise ValueError("Please configure BING_API_KEY in .env first!")
+        raise ValueError("Please configure 'BING_API_KEY' in .env first!")
 
     # Bing Search API endpoint
     search_url = "https://api.bing.microsoft.com/v7.0/search"

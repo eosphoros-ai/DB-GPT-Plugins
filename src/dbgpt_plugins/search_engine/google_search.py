@@ -21,7 +21,7 @@ def _google_search(query: str, num_results=8) -> str:
     API_KEY = os.getenv("GOOGLE_API_KEY")
     API_CX = os.getenv("GOOGLE_API_CX")
     if API_KEY is None or API_CX is None:
-        raise ValueError("Please configure GOOGLE_API_KEY and GOOGLE_API_CX in .env first!")
+        raise ValueError("Please configure 'GOOGLE_API_KEY' and 'GOOGLE_API_CX' in .env first!")
 
     # Bing Search API endpoint
     search_url = f"https://www.googleapis.com/customsearch/v1?key={API_KEY}&q={query}&cx={API_CX}&start=0&num=10"
