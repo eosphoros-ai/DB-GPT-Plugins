@@ -16,24 +16,19 @@ class Message(TypedDict):
 
 class AutoGPTSearchEngine(AutoGPTPluginTemplate):
     def __init__(self):
-        try:
-            super().__init__()
-            self._name = "Search-Engine-Plugin"
-            self._version = "0.1.0"
-            self._description = (
-                "This plug-in provides search for Internet information."
-            )
-            self.search_engine = os.getenv("SEARCH_ENGINE")
-            language = os.getenv("LANGUAGE")
-            if self.search_engine is None:
-                if language is not None and language == "en":
-                    self.search_engine = "google"
-                else:
-                    self.search_engine = "baidu"
-        except Exception as e:
-            print("init error!" + str(e))
-
-            
+        super().__init__()
+        self._name = "Search-Engine-Plugin"
+        self._version = "0.2.0"
+        self._description = (
+            "This plug-in provides search for Internet information."
+        )
+        self.search_engine = os.getenv("SEARCH_ENGINE")
+        language = os.getenv("LANGUAGE", "en")
+        if self.search_engine is None:
+            if language is not None and language == "en":
+                self.search_engine = "google"
+            else:
+                self.search_engine = "baidu"
 
     def can_handle_post_prompt(self) -> bool:
         return True
@@ -63,6 +58,7 @@ class AutoGPTSearchEngine(AutoGPTPluginTemplate):
                 {"query": "<query>"},
                 _baidu_search,
             )
+
         return prompt
 
     def can_handle_pre_command(self) -> bool:
