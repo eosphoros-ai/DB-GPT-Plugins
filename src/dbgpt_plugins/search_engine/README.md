@@ -40,8 +40,8 @@ BING_API_KEY=your_bing_api_key
 ```
 
 ## Obtaining Google Cookie:
-1. Go to the [Programmable Search Engine](https://developers.google.com/custom-search/v1/overview#api_key) website.
-2. Go to the [Programmable Search Engine](https://programmablesearchengine.google.com/controlpanel/create) website.
+1. Get Google Key, Go to the [Programmable Search Engine](https://developers.google.com/custom-search/v1/overview#api_key) website.
+2. Google CX, Go to the [Programmable Search Engine](https://programmablesearchengine.google.com/controlpanel/create) website.
 3. Get the API key and cx add it to the `.env` file in your project directory
 4. You can refer to website https://developers.google.com/custom-search/v1/reference/rest
 ![Google Key](./screenshots/google_key.png)
