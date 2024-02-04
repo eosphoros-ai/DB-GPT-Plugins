@@ -40,17 +40,17 @@ BING_API_KEY=your_bing_api_key
 ```
 
 ## Obtaining Google Cookie:
-1. Get GOOGLE_API_KEY
-Go to the [Programmable Search Engine](https://developers.google.com/custom-search/v1/overview#api_key) website.
+1. Get GOOGLE_API_KEY 
+- Go to the [Programmable Search Engine](https://developers.google.com/custom-search/v1/overview#api_key) website.
 ![Google Key](./screenshots/google_key.png)
 2. Get GOOGLE_API_CX
-Go to the [Programmable Search Engine](https://programmablesearchengine.google.com/controlpanel/create) website.
+- Go to the [Programmable Search Engine](https://programmablesearchengine.google.com/controlpanel/create) website.
 ![Google CX](./screenshots/google_cx2.png)
 ![Google CX](./screenshots/google_cx3.png)
 copy the id that behind the `cx=`
 3. Get the API key and cx add it to the `.env` file in your project directory
 
-Set the `GOOGLE_API_KEY` and  `GOOGLE_API_CX` in the `.env` file:
+- Set the `GOOGLE_API_KEY` and  `GOOGLE_API_CX` in the `.env` file:
 ```
 GOOGLE_API_KEY=your_google_api_key
 GOOGLE_API_CX=your_google_api_cx
