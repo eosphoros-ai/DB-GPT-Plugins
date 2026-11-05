@@ -19,7 +19,7 @@ def _baidu_search(query: str, num_results=8):
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:112.0) Gecko/20100101 Firefox/112.0"
     }
     url = f'https://www.baidu.com/s?wd={query}&rn={num_results}'
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, timeout=30)
     response.encoding = 'utf-8'
     soup = BeautifulSoup(response.text, 'html.parser')
     search_results = []
