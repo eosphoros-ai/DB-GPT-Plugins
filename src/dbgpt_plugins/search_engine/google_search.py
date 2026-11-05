@@ -26,7 +26,7 @@ def _google_search(query: str, num_results=8) -> str:
     # Bing Search API endpoint
     search_url = f"https://www.googleapis.com/customsearch/v1?key={API_KEY}&q={query}&cx={API_CX}&start=0&num=10"
 
-    response = requests.get(search_url)
+    response = requests.get(search_url, timeout=30)
     response.raise_for_status()
     search_results = response.json()
 

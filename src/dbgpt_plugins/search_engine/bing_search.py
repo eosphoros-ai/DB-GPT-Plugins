@@ -31,7 +31,7 @@ def _bing_search(query: str, num_results=8) -> str:
         "textDecorations": True,
         "textFormat": "HTML",
     }
-    response = requests.get(search_url, headers=headers, params=params)
+    response = requests.get(search_url, headers=headers, params=params, timeout=30)
     response.raise_for_status()
     search_results = response.json()
 
